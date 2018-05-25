@@ -50,9 +50,6 @@ def generate_random_request(constr=dict()):
         x = np.random.uniform(0, bounds[0])
         y = np.random.uniform(0, bounds[1])
 
-    copula_spec['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])
-    copula_spec['y_uniattribute_utility'] = PowerCls(r[1], a, b, bounds[1])
-
     return x, y, is_normalized, copula_spec
 
 

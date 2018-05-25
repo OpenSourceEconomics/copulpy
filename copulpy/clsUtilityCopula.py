@@ -4,6 +4,7 @@ import numpy as np
 from copulpy.clsScaledArchimedean import ScaledArchimedeanCls
 from copulpy.shared.auxiliary import distribute_copula_spec
 from copulpy.config_copulpy import IS_DEBUG
+from copulpy.clsPower import PowerCls
 from copulpy.clsMeta import MetaCls
 
 
@@ -12,13 +13,13 @@ class UtilityCopulaCls(MetaCls):
     def __init__(self, copula_spec):
 
         # Distribute specification
-        version, x_uniattribute_utility, y_uniattribute_utility, delta, u, generating_function = \
-            distribute_copula_spec(copula_spec, 'version',  'x_uniattribute_utility',
-            'y_uniattribute_utility', 'delta', 'u', 'generating_function')
+        version, r, bounds, delta, u, generating_function, a, b = \
+            distribute_copula_spec(copula_spec, 'version', 'r', 'bounds', 'delta', 'u',
+            'generating_function', 'a', 'b')
 
         self.attr = dict()
-        self.attr['x_uniattribute_utility'] = x_uniattribute_utility
-        self.attr['y_uniattribute_utility'] = y_uniattribute_utility
+        self.attr['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])
+        self.attr['y_uniattribute_utility'] = PowerCls(r[1], a, b, bounds[1])
 
         self.attr['delta'] = delta
         self.attr['u_1'] = u[0]

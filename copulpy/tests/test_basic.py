@@ -39,7 +39,7 @@ def test_3():
             copula_spec['b'] = np.random.normal()
 
             copula = UtilityCopulaCls(copula_spec)
-            np.testing.assert_equal(base, copula.evaluate(x, y, is_normalized))
+            np.testing.assert_almost_equal(base, copula.evaluate(x, y, is_normalized))
 
 
 def test_4():

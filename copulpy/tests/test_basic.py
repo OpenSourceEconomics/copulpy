@@ -11,42 +11,42 @@ from copulpy.config_copulpy import PACKAGE_DIR
 def test_1():
     """This test ensures that a multiattribute utility function is always created."""
     for _ in range(10):
-        x, y, copula_spec = generate_random_request()
+        x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
-        copula.evaluate(x, y)
+        copula.evaluate(x, y, is_normalized)
 
 
 def test_2():
     """This test runs a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:50]:
-        rslt, x, y, copula_spec = test
+        rslt, x, y, is_normalized, copula_spec = test
         copula = UtilityCopulaCls(copula_spec)
-        np.testing.assert_equal(copula.evaluate(x, y), rslt)
+        np.testing.assert_equal(copula.evaluate(x, y, is_normalized), rslt)
 
 
 def test_3():
     """This test ensures that linear transformations of the uniattribute utility functions do not
     matter for the evaluation of the multiattribute utility copula."""
     for _ in range(10):
-        x, y, copula_spec = generate_random_request()
+        x, y, is_normalized, copula_spec = generate_random_request()
 
         copula = UtilityCopulaCls(copula_spec)
-        base = copula.evaluate(x, y)
+        base = copula.evaluate(x, y, is_normalized)
 
         for _ in range(10):
             copula_spec['a'] = np.random.uniform(0.01, 10)
             copula_spec['b'] = np.random.normal()
 
             copula = UtilityCopulaCls(copula_spec)
-            np.testing.assert_equal(base, copula.evaluate(x, y))
+            np.testing.assert_equal(base, copula.evaluate(x, y, is_normalized))
 
 
 def test_4():
     """This test ensures that the basic conditions are satisfied by the multiattribute utility
     copula."""
     for _ in range(10):
-        _, _, copula_spec = generate_random_request()
+        _, _, _, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
 
         # Normalized range and domain
@@ -75,7 +75,7 @@ def test_5():
             constr['r'] = [1, 1]
         else:
             pass
-        _, _, copula_spec = generate_random_request(constr)
+        _, _, _, copula_spec = generate_random_request(constr)
 
         copula = UtilityCopulaCls(copula_spec)
         if attribute in ['x']:

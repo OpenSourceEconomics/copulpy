@@ -43,13 +43,17 @@ def generate_random_request(constr=dict()):
     b = copula_spec['b']
 
     # These are derived attributes and thus need to be created at the very end.
-    x = np.random.uniform(0, bounds[0])
-    y = np.random.uniform(0, bounds[1])
+    is_normalized = np.random.choice([True, False])
+    if is_normalized:
+        x, y = np.random.uniform(0, 1, 2)
+    else:
+        x = np.random.uniform(0, bounds[0])
+        y = np.random.uniform(0, bounds[1])
 
     copula_spec['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])
     copula_spec['y_uniattribute_utility'] = PowerCls(r[1], a, b, bounds[1])
 
-    return x, y, copula_spec
+    return x, y, is_normalized, copula_spec
 
 
 

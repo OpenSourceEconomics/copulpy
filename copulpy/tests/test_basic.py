@@ -21,7 +21,7 @@ def test_1():
         copula.evaluate(x, y, is_normalized)
 
 
-@pytest.mark.skipif(os.getenv('CI') is 'True', reason='slight numerical differences')
+@pytest.mark.skipif(os.getenv('CI') is 'true', reason='slight numerical differences')
 def test_2():
     """This test runs a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))

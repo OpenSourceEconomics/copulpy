@@ -26,7 +26,7 @@ def test_2():
     for test in tests[:50]:
         rslt, x, y, is_normalized, copula_spec = test
         copula = UtilityCopulaCls(copula_spec)
-        np.testing.assert_equal(copula.evaluate(x, y, is_normalized), rslt)
+        np.testing.assert_almost_equal(copula.evaluate(x, y, is_normalized), rslt)
 
 
 def test_3():

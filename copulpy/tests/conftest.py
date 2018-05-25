@@ -16,4 +16,3 @@ def set_seed():
 def fresh_directory():
     """Each test is executed in a fresh directory."""
     os.chdir(tempfile.mkdtemp())
-

@@ -13,9 +13,9 @@ class UtilityCopulaCls(MetaCls):
     def __init__(self, copula_spec):
 
         # Distribute specification
+        args = ['version', 'r', 'bounds', 'delta', 'u', 'generating_function', 'a', 'b']
         version, r, bounds, delta, u, generating_function, a, b = \
-            distribute_copula_spec(copula_spec, 'version', 'r', 'bounds', 'delta', 'u',
-            'generating_function', 'a', 'b')
+            distribute_copula_spec(copula_spec, *args)
 
         self.attr = dict()
         self.attr['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])

@@ -1,8 +1,6 @@
 """This module contains some auxiliary functions that ease our testing efforts."""
 import numpy as np
 
-from copulpy.clsPower import PowerCls
-
 
 def generate_random_request(constr=dict()):
     """This function generates a random request to evaluate a multiattribute utility function."""
@@ -38,9 +36,6 @@ def generate_random_request(constr=dict()):
 
     # We can now distribute the final specification for construction of the derived attributes.
     bounds = copula_spec['bounds']
-    r = copula_spec['r']
-    a = copula_spec['a']
-    b = copula_spec['b']
 
     # These are derived attributes and thus need to be created at the very end.
     is_normalized = np.random.choice([True, False])
@@ -51,6 +46,3 @@ def generate_random_request(constr=dict()):
         y = np.random.uniform(0, bounds[1])
 
     return x, y, is_normalized, copula_spec
-
-
-

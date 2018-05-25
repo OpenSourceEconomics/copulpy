@@ -138,7 +138,7 @@ class ScaledArchimedeanCls(MetaCls):
                 np.testing.assert_equal(np.all(0.0 <= var) <= 1.0, True)
                 np.testing.assert_equal(np.all(var <= 1.0), True)
         elif label in ['evaluate_out']:
-            rslt , = args
+            rslt, = args
             np.testing.assert_equal(np.all(0.0 <= rslt), True)
             np.testing.assert_equal(np.all(rslt <= 1.0), True)
         elif label in ['_get_scale_in']:

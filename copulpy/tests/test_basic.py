@@ -1,5 +1,9 @@
 """This module contains some tests for the development of sound multiattribute utility copulas."""
+from subprocess import CalledProcessError
 import pickle as pkl
+import subprocess
+import os
+
 
 import numpy as np
 
@@ -111,3 +115,21 @@ def test_5():
             np.testing.assert_equal(rslt_1 < rslt_2, True)
         else:
             np.testing.assert_equal(rslt_1 > rslt_2, True)
+
+
+def test_6():
+    """This test runs flake8 to ensure the code quality. However, this is only relevant during
+    development."""
+    try:
+        import flake8    # noqa: F401
+    except ImportError:
+        return None
+
+    cwd = os.getcwd()
+    os.chdir(PACKAGE_DIR)
+    try:
+        subprocess.check_call(['flake8'])
+        os.chdir(cwd)
+    except CalledProcessError:
+        os.chdir(cwd)
+        raise CalledProcessError

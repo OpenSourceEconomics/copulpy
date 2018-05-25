@@ -109,11 +109,12 @@ class ScaledArchimedeanCls(MetaCls):
         criterion = partial(self.criterion, u_1, u_2)
 
         bounds = [[0.01, 0.99], [0.01, 0.99]]
-        x, f, report = fmin_l_bfgs_b(criterion, [0.5, 0.5], approx_grad=True, bounds=bounds)
+        x, _, _ = fmin_l_bfgs_b(criterion, [0.5, 0.5], approx_grad=True, bounds=bounds)
 
         return x
 
-    def _additional_checks(self, label, *args):
+    @staticmethod
+    def _additional_checks(label, *args):
         """This method performs some additional checks on selected features of the class
         instance."""
         # We only run these tests during debugging as otherwise the performance deteriorates.

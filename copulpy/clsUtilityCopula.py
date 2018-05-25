@@ -69,7 +69,8 @@ class UtilityCopulaCls(MetaCls):
         for u in [u_1, u_2]:
             np.testing.assert_equal(0 <= u <= 1, True)
 
-    def _additional_checks(self, label, *args):
+    @staticmethod
+    def _additional_checks(label, *args):
         """This method performs some additional checks on selected features of the class
         instance."""
         # We only run these tests during debugging as otherwise the performance deteriorates.

@@ -1,5 +1,8 @@
 language: python
 
+env:
+  - PATH="$HOME/miniconda/bin:$PATH"
+
 install:
   - sudo apt-get update
   - ./.travis_miniconda.sh

@@ -28,7 +28,6 @@ tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb')
 #tests = pkl.load(open('regression_vault.copulpy.pkl', 'rb'))
 
 for test in tests:
-    # TODO: This does not test the normalization step.
     rslt, x, y, is_normalized, copula_spec = test
     copula = UtilityCopulaCls(copula_spec)
     np.testing.assert_equal(copula.evaluate(x, y, is_normalized), rslt)

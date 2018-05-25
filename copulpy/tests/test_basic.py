@@ -6,6 +6,7 @@ import os
 
 
 import numpy as np
+import pytest
 
 from copulpy.tests.test_auxiliary import generate_random_request
 from copulpy.clsUtilityCopula import UtilityCopulaCls
@@ -18,6 +19,7 @@ def test_1():
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
         copula.evaluate(x, y, is_normalized)
+
 
 @pytest.mark.skipif(os.getenv('CI') is 'True', reason='slight numerical differences')
 def test_2():

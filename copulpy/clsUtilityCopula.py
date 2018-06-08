@@ -46,9 +46,9 @@ class UtilityCopulaCls(MetaCls):
         # Construct the normalized points of evaluation.
         if not is_normalized:
             v_1, v_2 = 0.0, 0.0
-            if x > 0:
+            if np.min(x) > 0:
                 v_1 = x_uniattribute_utility.evaluate(x, True)
-            if y > 0:
+            if np.min(y) > 0:
                 v_2 = y_uniattribute_utility.evaluate(y, True)
         else:
             v_1, v_2 = x, y

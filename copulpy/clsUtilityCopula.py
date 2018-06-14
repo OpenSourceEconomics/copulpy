@@ -21,6 +21,7 @@ class UtilityCopulaCls(MetaCls):
         self.attr['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])
         self.attr['y_uniattribute_utility'] = PowerCls(r[1], a, b, bounds[1])
 
+        self.attr['bounds'] = bounds
         self.attr['delta'] = delta
         self.attr['u_1'] = u[0]
         self.attr['u_2'] = u[1]
@@ -41,7 +42,7 @@ class UtilityCopulaCls(MetaCls):
 
         # Distribute class attributes
         attr = ['copula', 'x_uniattribute_utility', 'y_uniattribute_utility']
-        copula, x_uniattribute_utility, y_uniattribute_utility = self._distribute_attributes(attr)
+        copula, x_uniattribute_utility, y_uniattribute_utility = self.get_attr(attr)
 
         # Construct the normalized points of evaluation.
         if not is_normalized:
@@ -64,7 +65,7 @@ class UtilityCopulaCls(MetaCls):
     def _check_attributes(self):
         """This function checks the attributes of the class."""
         # Distribute class attributes
-        u_1, u_2 = self._distribute_attributes(['u_1', 'u_2'])
+        u_1, u_2 = self.get_attr('u_1', 'u_2')
 
         for u in [u_1, u_2]:
             np.testing.assert_equal(0 <= u <= 1, True)

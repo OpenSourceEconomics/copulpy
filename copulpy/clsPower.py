@@ -26,7 +26,7 @@ class PowerCls(MetaCls):
         self._check_attributes()
 
         # Distribute class attribute
-        upper_bound = self._distribute_attributes(['upper_bound'])
+        upper_bound = self.get_attr('upper_bound')
 
         if is_normalized:
             np.testing.assert_equal(upper_bound is None, False)
@@ -42,7 +42,7 @@ class PowerCls(MetaCls):
 
     def _power_utility(self, x):
         """This method evaluates power utility."""
-        r, a, b = self._distribute_attributes(['r', 'a', 'b'])
+        r, a, b = self.get_attr('r', 'a', 'b')
 
         if r > 0:
             rslt = a * (x ** r) + b
@@ -57,7 +57,7 @@ class PowerCls(MetaCls):
 
     def _check_attributes(self):
         """This function checks the attributes of the class."""
-        r, a, b, upper_bound = self._distribute_attributes(['r', 'a', 'b', 'upper_bound'])
+        r, a, b, upper_bound = self.get_attr('r', 'a', 'b', 'upper_bound')
 
         for var in [r, a, b, upper_bound]:
             np.testing.assert_equal(isinstance(var, Number), True)
@@ -76,7 +76,7 @@ class PowerCls(MetaCls):
             return
 
         # Distribute class attributes
-        upper_bound = self._distribute_attributes(['upper_bound'])
+        upper_bound = self.get_attr('upper_bound')
 
         if label in ["evaluate_out"]:
             u, = args

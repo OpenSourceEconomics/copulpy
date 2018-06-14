@@ -3,8 +3,12 @@
 
 class MetaCls(object):
     """This class collects all methods that are useful for all other classes in the package."""
-    def _distribute_attributes(self, keys):
+    def get_attr(self, *keys):
         """This method allows to quickly access all class attributes."""
+        # We want to be able to pass in list of keys and keys directly.
+        if isinstance(keys[0], list):
+            keys = keys[0]
+
         rslt = []
         for key_ in keys:
             rslt += [self.attr[key_]]

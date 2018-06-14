@@ -37,7 +37,7 @@ class ScaledArchimedeanCls(MetaCls):
         self._additional_checks('evaluate_in', v_1, v_2)
 
         # Distribute class attributes
-        m, delta = self._distribute_attributes(['m', 'delta'])
+        m, delta = self.get_attr('m', 'delta')
 
         # Construct auxiliary objects
         m_1, m_2 = m
@@ -62,7 +62,7 @@ class ScaledArchimedeanCls(MetaCls):
 
     def _check_attributes(self):
         """This function checks the attributes of the class."""
-        delta = self._distribute_attributes(['delta'])
+        delta = self.get_attr('delta')
         np.testing.assert_equal(delta > 0, True)
 
     def _fit(self):
@@ -84,7 +84,7 @@ class ScaledArchimedeanCls(MetaCls):
         self._additional_checks('_get_scale_in', m_1, m_2)
 
         # Distribute class attributes
-        delta = self._distribute_attributes(['delta'])
+        delta = self.get_attr('delta')
 
         rslt = 1.0
         rslt *= self.generating_function(delta, m_1)

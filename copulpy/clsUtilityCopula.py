@@ -79,7 +79,7 @@ class UtilityCopulaCls(MetaCls):
 
         fmt_ = ' {:<10}    ' + '{:25.15f}' * 2 + '\n'
         with open('fit.copulpy.info', 'a') as outfile:
-            outfile.write(' BOUNDARY VALUES\n\n')
+            outfile.write(' Boundary Values\n\n')
             outfile.write(fmt_.format(*[' requested'] + list(u)))
             line = [' fitted', self.evaluate(1, 0, True), self.evaluate(0, 1, True)]
             outfile.write(fmt_.format(*line))

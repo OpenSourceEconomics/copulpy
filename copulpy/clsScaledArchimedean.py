@@ -113,7 +113,7 @@ class ScaledArchimedeanCls(MetaCls):
 
         fmt_ = ' {:<10}    ' + '{:25.15f}' * 2 + '\n'
         with open('fit.copulpy.info', 'w') as outfile:
-            outfile.write(' COPULA FITTING\n\n')
+            outfile.write(' Copula Fitting\n\n')
             outfile.write(fmt_.format(*[' x'] + opt['x'].tolist()))
             outfile.write(fmt_.format(*[' fun'] + opt['fun'].tolist()))
             outfile.write('\n')

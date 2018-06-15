@@ -109,9 +109,16 @@ class ScaledArchimedeanCls(MetaCls):
         criterion = partial(self.criterion, u_1, u_2)
 
         bounds = [[0.01, 0.01], [0.99, 0.99]]
-        x = least_squares(criterion, [0.5, 0.5], bounds=bounds)['x']
+        opt = least_squares(criterion, [0.5, 0.5], bounds=bounds)
 
-        return x
+        fmt_ = ' {:<10}    ' + '{:25.15f}' * 2 + '\n'
+        with open('fit.copulpy.info', 'w') as outfile:
+            outfile.write(' COPULA FITTING\n\n')
+            outfile.write(fmt_.format(*[' x'] + opt['x'].tolist()))
+            outfile.write(fmt_.format(*[' fun'] + opt['fun'].tolist()))
+            outfile.write('\n')
+
+        return opt['x']
 
     @staticmethod
     def _additional_checks(label, *args):

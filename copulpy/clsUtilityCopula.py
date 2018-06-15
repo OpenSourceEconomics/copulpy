@@ -32,6 +32,8 @@ class UtilityCopulaCls(MetaCls):
             raise NotImplementedError
         self.attr['copula'] = copula
 
+        self._logging()
+
         self._check_attributes()
 
     def evaluate(self, x, y, is_normalized=False):
@@ -69,6 +71,18 @@ class UtilityCopulaCls(MetaCls):
 
         for u in [u_1, u_2]:
             np.testing.assert_equal(0 <= u <= 1, True)
+
+    def _logging(self):
+        """This function provides some basic logging."""
+        # Distribute class attributes
+        u = self.attr['u_1'], self.attr['u_2']
+
+        fmt_ = ' {:<10}    ' + '{:25.15f}' * 2 + '\n'
+        with open('fit.copulpy.info', 'a') as outfile:
+            outfile.write(' BOUNDARY VALUES\n\n')
+            outfile.write(fmt_.format(*[' requested'] + list(u)))
+            line = [' fitted', self.evaluate(1, 0, True), self.evaluate(0, 1, True)]
+            outfile.write(fmt_.format(*line))
 
     @staticmethod
     def _additional_checks(label, *args):

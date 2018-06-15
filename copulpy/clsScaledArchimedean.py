@@ -2,7 +2,7 @@
 from functools import partial
 from numbers import Number
 
-from scipy.optimize import fmin_l_bfgs_b
+from scipy.optimize import least_squares
 import numpy as np
 
 from copulpy.config_copulpy import IS_DEBUG
@@ -102,14 +102,14 @@ class ScaledArchimedeanCls(MetaCls):
         f[0] = a * m_1 - u_1
         f[1] = a * m_2 - u_2
 
-        return np.mean(np.square(f))
+        return f
 
     def get_coefficients(self, u_1, u_2):
-        """Get coefficients for Archimedian copula."""
+        """Get coefficients for Archimedean copula."""
         criterion = partial(self.criterion, u_1, u_2)
 
-        bounds = [[0.01, 0.99], [0.01, 0.99]]
-        x, _, _ = fmin_l_bfgs_b(criterion, [0.5, 0.5], approx_grad=True, bounds=bounds)
+        bounds = [[0.01, 0.01], [0.99, 0.99]]
+        x = least_squares(criterion, [0.5, 0.5], bounds=bounds)['x']
 
         return x
 

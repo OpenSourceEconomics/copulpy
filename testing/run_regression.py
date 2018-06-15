@@ -14,7 +14,6 @@ if False:
     tests = []
     for _ in range(NUM_TESTS):
         x, y, is_normalized, copula_spec = generate_random_request()
-
         rslt = UtilityCopulaCls(copula_spec).evaluate(x, y, is_normalized)
         tests += [[rslt, x, y, is_normalized, copula_spec]]
 
@@ -22,7 +21,7 @@ if False:
 
 
 tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
-# tests = pkl.load(open('regression_vault.copulpy.pkl', 'rb'))
+#tests = pkl.load(open('regression_vault.copulpy.pkl', 'rb'))
 
 for test in tests:
     rslt, x, y, is_normalized, copula_spec = test

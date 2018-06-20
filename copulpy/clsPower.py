@@ -2,7 +2,6 @@
 from numbers import Number
 import numpy as np
 
-from copulpy.config_copulpy import POWER_MIN
 from copulpy.config_copulpy import IS_DEBUG
 from copulpy.clsMeta import MetaCls
 
@@ -30,8 +29,8 @@ class PowerCls(MetaCls):
 
         if is_normalized:
             np.testing.assert_equal(upper_bound is None, False)
-            numerator = self._power_utility(x) - self._power_utility(POWER_MIN)
-            denominator = self._power_utility(upper_bound) - self._power_utility(POWER_MIN)
+            numerator = self._power_utility(x) - self._power_utility(0)
+            denominator = self._power_utility(upper_bound) - self._power_utility(0)
             u = numerator / denominator
         else:
             u = self._power_utility(x)

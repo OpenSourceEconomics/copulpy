@@ -15,10 +15,10 @@ np.random.seed(123)
 
 copula_spec = dict()
 
-copula_spec['r'] = [-1.5, -0.5]
+copula_spec['r'] = [1.5, 0.5]
 copula_spec['u'] = 0.1, 0.5
 copula_spec['bounds'] = 10, 150
-copula_spec['delta'] = 0.2
+copula_spec['delta'] = 5.2
 
 copula_spec['generating_function'] = 1
 copula_spec['version'] = 'scaled_archimedean'
@@ -29,3 +29,5 @@ copula = UtilityCopulaCls(copula_spec)
 u_eval = []
 u_eval += [copula.evaluate(1, 0, True)]
 u_eval += [copula.evaluate(0, 1, True)]
+
+print(copula_spec['u'], u_eval)

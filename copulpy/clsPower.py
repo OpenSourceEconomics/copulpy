@@ -57,7 +57,7 @@ class PowerCls(MetaCls):
         for var in [r, a, b, upper_bound]:
             np.testing.assert_equal(isinstance(var, Number), True)
 
-        for var in [a]:
+        for var in [a, r]:
             np.testing.assert_equal(var > 0, True)
 
         if upper_bound is not None:

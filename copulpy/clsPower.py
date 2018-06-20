@@ -46,10 +46,6 @@ class PowerCls(MetaCls):
 
         if r > 0:
             rslt = a * (x ** r) + b
-        elif r == 0:
-            rslt = np.log(x)
-        elif r < 0:
-            rslt = -x**r
         else:
             raise NotImplementedError
 

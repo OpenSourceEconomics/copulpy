@@ -17,18 +17,10 @@ def generate_random_request(constr=None):
     copula_spec['marginals'] = marginals
     copula_spec['version'] = version
 
-    copula_spec['r'] = []
-    for marginal in marginals:
-        if marginal == 'power':
-            copula_spec['r'] += [np.random.uniform(0.001, 5)]
-        elif marginal == 'exponential':
-            copula_spec['r'] += [np.random.uniform(-5, 5)]
-        else:
-            raise NotImplementedError
-
     copula_spec['bounds'] = np.random.uniform(0.1, 10, 2)
     copula_spec['u'] = np.random.uniform(0.01, 0.99, 2)
     copula_spec['delta'] = np.random.uniform(0.001, 5)
+    copula_spec['r'] = np.random.uniform(0.001, 5, 2)
     copula_spec['a'] = np.random.uniform(0.01, 10)
     copula_spec['b'] = np.random.normal()
 

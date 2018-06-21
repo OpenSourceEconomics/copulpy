@@ -43,10 +43,12 @@ class ExponentialCls(MetaCls):
         """This method evaluates exponential utility."""
         r, a, b = self.get_attr('r', 'a', 'b')
 
-        if r != 0:
-            rslt = a * (1.0 - np.exp(- r * x)) / a + b
-        else:
+        if r > 0.0:
+            rslt = a * (1.0 - np.exp(- r * x)) / r + b
+        elif r == 0.0:
             rslt = a * x + b
+        else:
+            raise NotImplementedError
 
         return rslt
 
@@ -56,6 +58,9 @@ class ExponentialCls(MetaCls):
 
         for var in [r, a, b, upper_bound]:
             np.testing.assert_equal(isinstance(var, Number), True)
+
+        for var in [r]:
+            np.testing.assert_equal(var >= 0, True)
 
         for var in [a]:
             np.testing.assert_equal(var > 0, True)

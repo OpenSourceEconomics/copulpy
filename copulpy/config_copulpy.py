@@ -3,4 +3,7 @@ import os
 
 PACKAGE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-IS_DEBUG = True
+# I want to run all debugging tests in the development environment.
+IS_DEBUG = False
+if os.getenv('COPULPY_DEV') == 'TRUE':
+    IS_DEBUG = True

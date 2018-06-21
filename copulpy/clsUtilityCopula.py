@@ -16,18 +16,20 @@ class UtilityCopulaCls(MetaCls):
         # Distribute specification
         args = []
         args += ['version', 'r', 'bounds', 'delta', 'u', 'generating_function', 'a', 'b']
-        args += ['uniattribute']
-        version, r, bounds, delta, u, generating_function, a, b, uniattribute = \
+        args += ['marginals']
+        version, r, bounds, delta, u, generating_function, a, b, marginals = \
             distribute_copula_spec(copula_spec, *args)
 
         self.attr = dict()
-        if uniattribute == 'exponential':
-            uniattribute_utility = ExponentialCls
-        elif uniattribute == 'power':
-            uniattribute_utility = PowerCls
+        marginal_utility = []
+        for i, marginal in enumerate(marginals):
+            if marginal == 'power':
+                marginal_utility += [PowerCls(r[i], a, b, bounds[i])]
+            elif marginal == 'exponential':
+                marginal_utility += [ExponentialCls(r[i], a, b, bounds[i])]
 
-        self.attr['x_uniattribute_utility'] = uniattribute_utility(r[0], a, b, bounds[0])
-        self.attr['y_uniattribute_utility'] = uniattribute_utility(r[1], a, b, bounds[1])
+        self.attr['x_uniattribute_utility'] = marginal_utility[0]
+        self.attr['y_uniattribute_utility'] = marginal_utility[1]
 
         self.attr['bounds'] = bounds
         self.attr['delta'] = delta

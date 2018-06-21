@@ -3,6 +3,7 @@ import numpy as np
 
 from copulpy.clsScaledArchimedean import ScaledArchimedeanCls
 from copulpy.shared.auxiliary import distribute_copula_spec
+from copulpy.clsExponential import ExponentialCls
 from copulpy.config_copulpy import IS_DEBUG
 from copulpy.clsPower import PowerCls
 from copulpy.clsMeta import MetaCls
@@ -13,13 +14,20 @@ class UtilityCopulaCls(MetaCls):
     def __init__(self, copula_spec):
 
         # Distribute specification
-        args = ['version', 'r', 'bounds', 'delta', 'u', 'generating_function', 'a', 'b']
-        version, r, bounds, delta, u, generating_function, a, b = \
+        args = []
+        args += ['version', 'r', 'bounds', 'delta', 'u', 'generating_function', 'a', 'b']
+        args += ['uniattribute']
+        version, r, bounds, delta, u, generating_function, a, b, uniattribute = \
             distribute_copula_spec(copula_spec, *args)
 
         self.attr = dict()
-        self.attr['x_uniattribute_utility'] = PowerCls(r[0], a, b, bounds[0])
-        self.attr['y_uniattribute_utility'] = PowerCls(r[1], a, b, bounds[1])
+        if uniattribute == 'exponential':
+            uniattribute_utility = ExponentialCls
+        elif uniattribute == 'power':
+            uniattribute_utility = PowerCls
+
+        self.attr['x_uniattribute_utility'] = uniattribute_utility(r[0], a, b, bounds[0])
+        self.attr['y_uniattribute_utility'] = uniattribute_utility(r[1], a, b, bounds[1])
 
         self.attr['bounds'] = bounds
         self.attr['delta'] = delta

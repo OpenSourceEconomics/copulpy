@@ -8,7 +8,7 @@ from copulpy.tests.test_auxiliary import generate_random_request
 from copulpy.clsUtilityCopula import UtilityCopulaCls
 from copulpy.config_copulpy import PACKAGE_DIR
 
-if False:
+if True:
 
     NUM_TESTS = 1000
     tests = []
@@ -20,8 +20,8 @@ if False:
     pkl.dump(tests, open('regression_vault.copulpy.pkl', 'wb'))
 
 
-tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
-#tests = pkl.load(open('regression_vault.copulpy.pkl', 'rb'))
+#tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
+tests = pkl.load(open('regression_vault.copulpy.pkl', 'rb'))
 
 for test in tests:
     rslt, x, y, is_normalized, copula_spec = test

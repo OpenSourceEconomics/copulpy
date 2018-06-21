@@ -11,13 +11,22 @@ def generate_random_request(constr=None):
     if version in ['scaled_archimedean']:
         generating_function = np.random.choice([1])
 
+    uniattribute = np.random.choice(['power', 'exponential'])
+
     copula_spec['generating_function'] = generating_function
+    copula_spec['uniattribute'] = uniattribute
     copula_spec['version'] = version
+
+    if uniattribute == 'power':
+        copula_spec['r'] = np.random.uniform(0.001, 5, 2)
+    elif uniattribute == 'exponential':
+        copula_spec['r'] = np.random.uniform(-5, 5, 2)
+    else:
+        raise NotImplementedError
 
     copula_spec['bounds'] = np.random.uniform(0.1, 10, 2)
     copula_spec['u'] = np.random.uniform(0.01, 0.99, 2)
     copula_spec['delta'] = np.random.uniform(0.001, 5)
-    copula_spec['r'] = np.random.uniform(0.001, 5, 2)
     copula_spec['a'] = np.random.uniform(0.01, 10)
     copula_spec['b'] = np.random.normal()
 

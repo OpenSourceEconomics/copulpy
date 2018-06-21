@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from subprocess import CalledProcessError
 import pickle as pkl
@@ -13,21 +14,9 @@ from copulpy.clsUtilityCopula import UtilityCopulaCls
 from copulpy.config_copulpy import PACKAGE_DIR
 np.random.seed(123)
 
-copula_spec = dict()
+for _ in range(1000):
+    x, y, is_normalized, copula_spec = generate_random_request()
 
-copula_spec['r'] = [1.5, 0.5]
-copula_spec['u'] = 0.1, 0.5
-copula_spec['bounds'] = 10, 150
-copula_spec['delta'] = 5.2
-
-copula_spec['generating_function'] = 1
-copula_spec['version'] = 'scaled_archimedean'
-copula_spec['a'] = 10.0
-copula_spec['b'] = 17.0
-
-copula = UtilityCopulaCls(copula_spec)
-u_eval = []
-u_eval += [copula.evaluate(1, 0, True)]
-u_eval += [copula.evaluate(0, 1, True)]
-
-print(copula_spec['u'], u_eval)
+    print(is_normalized, 'out')
+    copula = UtilityCopulaCls(copula_spec)
+    copula.evaluate(x, y, is_normalized)

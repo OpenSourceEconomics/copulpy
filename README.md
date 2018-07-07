@@ -1,6 +1,6 @@
 # copulpy
 
-``copulpy`` is an open-source Python package for the use of multiattribute utility copulas. The package is based on the seminal paper:
+``copulpy`` is an open-source Python package for the use of multiattribute utility copulas. The package is based on the following seminal paper:
 
 > Ali E. Abbas (2009). [Multiattribute utility copulas](https://doi.org/10.1287/opre.1080.0687). *Operations Research*, 57(6): 1367–1383.
 

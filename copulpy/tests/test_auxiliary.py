@@ -3,7 +3,7 @@ import numpy as np
 
 
 def generate_random_request(constr=None):
-    """This function generates a random request to evaluate a multiattribute utility function."""
+    """Generate a random request to evaluate a multiattribute utility function."""
     constr = constr or dict()
     copula_spec = dict()
 

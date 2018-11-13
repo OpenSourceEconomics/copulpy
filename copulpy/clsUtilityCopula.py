@@ -7,7 +7,7 @@ from copulpy.clsExponential import ExponentialCls
 from copulpy.config_copulpy import IS_DEBUG
 from copulpy.clsPower import PowerCls
 from copulpy.clsMeta import MetaCls
-from copulpy.clsNonstationaryCES import NonstationaryUtil
+from copulpy.clsNonstationaryUtil import NonstationaryUtilCls
 
 
 class UtilityCopulaCls(MetaCls):
@@ -15,7 +15,8 @@ class UtilityCopulaCls(MetaCls):
 
     def __init__(self, copula_spec):
         """Init class."""
-        version = distribute_copula_spec(copula_spec, ['version'])
+        version = distribute_copula_spec(copula_spec, *['version'])
+        version = version[0]
         self.attr = dict()
         self.attr['version'] = version
 
@@ -50,7 +51,7 @@ class UtilityCopulaCls(MetaCls):
             self._check_attributes()
 
         elif version in ['nonstationary']:
-            args = ['alpha, beta', 'gamma', 'discont_factors', 'y_scale']
+            args = ['alpha', 'beta', 'gamma', 'discont_factors', 'y_scale']
             alpha, beta, gamma, discont_factors, y_scale = \
                 distribute_copula_spec(copula_spec, *args)
             self.attr['alpha'] = alpha
@@ -59,7 +60,8 @@ class UtilityCopulaCls(MetaCls):
             self.attr['discont_factors'] = discont_factors
             self.attr['y_scale'] = y_scale
 
-            copula = NonstationaryUtil(alpha, beta, gamma, discont_factors, y_scale)
+            copula = NonstationaryUtilCls(alpha, beta, gamma, discont_factors, y_scale)
+            self.attr['copula'] = copula
         else:
             raise NotImplementedError
 

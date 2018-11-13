@@ -4,7 +4,7 @@ import numpy as np
 from copulpy.clsMeta import MetaCls
 
 
-class NonstationaryUtil(MetaCls):
+class NonstationaryUtilCls(MetaCls):
     """Manage the nonstationary utility function."""
 
     def __init__(self, alpha, beta, gamma, discont_factors, y_scale):
@@ -14,6 +14,7 @@ class NonstationaryUtil(MetaCls):
         self.attr['beta'] = beta
         self.attr['gamma'] = gamma
         self.attr['discont_factors'] = discont_factors
+        self.attr['y_scale'] = y_scale
 
         self._fit()
 
@@ -22,7 +23,7 @@ class NonstationaryUtil(MetaCls):
     def evaluate(self, x, y, t=0):
         """Evaluate."""
         alpha, beta, gamma = self.get_attr('alpha', 'beta', 'gamma')
-        y_weights = self.get_attr('y_scale')
+        y_weights = self.get_attr('y_weights')
         discont_factors = self.get_attr('discont_factors')
         v_1 = x ** (alpha * beta)
         v_2 = y ** (alpha * gamma)

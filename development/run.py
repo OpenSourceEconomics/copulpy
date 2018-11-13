@@ -14,7 +14,7 @@ from copulpy.clsUtilityCopula import UtilityCopulaCls
 # from copulpy.config_copulpy import PACKAGE_DIR
 np.random.seed(123)
 
-for _ in range(1):
+for _ in range(10):
     x, y, is_normalized, copula_spec = generate_random_request()
 
     # copula_spec['marginals'] = ['exponential', 'exponential']
@@ -29,6 +29,7 @@ for _ in range(1):
         copula_spec['alpha'], copula_spec['beta'], copula_spec['gamma'],
         copula_spec['y_scale'])
     )
+    print('restricted: {0}.'.format(copula_spec['restricted']))
     print('x: {0:.2f}, y: {1:.2f}, utility: {2:.2f}.'.format(x, y, util))
     print('')
 

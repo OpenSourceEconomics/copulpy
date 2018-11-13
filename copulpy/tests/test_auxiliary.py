@@ -27,6 +27,8 @@ def generate_random_request(constr=None):
     copula_spec['gamma'] = np.random.uniform(0.4, 1.0)
     copula_spec['y_scale'] = np.random.uniform(0.5, 10.0)
     copula_spec['discont_factors'] = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+    copula_spec['restricted'] = np.random.choice([True, False])
+    copula_spec['unrestricted_weights'] = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
     # We want to be able to request some constraint special cases.
     if 'r' in constr.keys():

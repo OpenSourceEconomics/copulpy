@@ -51,16 +51,14 @@ class UtilityCopulaCls(MetaCls):
             self._check_attributes()
 
         elif version in ['nonstationary']:
-            args = ['alpha', 'beta', 'gamma', 'discont_factors', 'y_scale']
-            alpha, beta, gamma, discont_factors, y_scale = \
+            # Distribute parameters
+            args = ['alpha', 'beta', 'gamma', 'discont_factors', 'y_scale',
+                    'restricted', 'unrestricted_weights']
+            alpha, beta, gamma, discont_factors, y_scale, restricted, unrestricted_weights = \
                 distribute_copula_spec(copula_spec, *args)
-            self.attr['alpha'] = alpha
-            self.attr['beta'] = alpha
-            self.attr['gamma'] = alpha
-            self.attr['discont_factors'] = discont_factors
-            self.attr['y_scale'] = y_scale
 
-            copula = NonstationaryUtilCls(alpha, beta, gamma, discont_factors, y_scale)
+            copula = NonstationaryUtilCls(alpha, beta, gamma, discont_factors, y_scale,
+                                          restricted, unrestricted_weights)
             self.attr['copula'] = copula
         else:
             raise NotImplementedError

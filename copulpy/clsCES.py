@@ -5,7 +5,7 @@ from copulpy.config_copulpy import IS_DEBUG
 from copulpy.clsMeta import MetaCls
 
 
-class CES(MetaCls):
+class CESCls(MetaCls):
     """CES class."""
 
     def __init__(self, alpha, y_weight, discont_factor):

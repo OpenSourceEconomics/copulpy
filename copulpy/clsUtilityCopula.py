@@ -9,22 +9,31 @@ from copulpy.clsPower import PowerCls
 from copulpy.clsMeta import MetaCls
 from copulpy.clsNonstationaryUtil import NonstationaryUtilCls
 
+from copulpy.logging.log_scaled_archimedean import log_scaled_archimedean
+from copulpy.logging.log_nonstationary import log_nonstationary
+
 
 class UtilityCopulaCls(MetaCls):
     """Manage all things related to the multiattribute utility copulas."""
 
     def __init__(self, copula_spec):
         """Init class."""
-        version = distribute_copula_spec(copula_spec, *['version'])
-        version = version[0]
+        version = distribute_copula_spec(copula_spec, 'version')
         self.attr = dict()
         self.attr['version'] = version
 
+        # Assign correct logging function.
         if version in ['scaled_archimedean']:
-            # Distribute specification
-            args = ['version', 'r', 'bounds', 'delta', 'u', 'generating_function',
-                    'a', 'b', 'marginals']
-            version, r, bounds, delta, u, generating_function, a, b, marginals = \
+            self.logging = log_scaled_archimedean
+        elif version in ['nonstationary']:
+            self.logging = log_nonstationary
+        else:
+            raise NotImplementedError
+
+        # Handle other attributes
+        if version in ['scaled_archimedean']:
+            args = ['r', 'bounds', 'delta', 'u', 'generating_function', 'a', 'b', 'marginals']
+            r, bounds, delta, u, generating_function, a, b, marginals = \
                 distribute_copula_spec(copula_spec, *args)
 
             marginal_utility = []
@@ -36,32 +45,26 @@ class UtilityCopulaCls(MetaCls):
 
             self.attr['x_uniattribute_utility'] = marginal_utility[0]
             self.attr['y_uniattribute_utility'] = marginal_utility[1]
-
             self.attr['bounds'] = bounds
             self.attr['delta'] = delta
             self.attr['u_1'] = u[0]
             self.attr['u_2'] = u[1]
 
             copula = ScaledArchimedeanCls(generating_function, u[0], u[1], delta)
-
-            self.attr['copula'] = copula
-
-            self._logging()
-
             self._check_attributes()
 
         elif version in ['nonstationary']:
-            # Distribute parameters
-            args = ['alpha', 'beta', 'gamma', 'discont_factors', 'y_scale',
-                    'restricted', 'unrestricted_weights']
-            alpha, beta, gamma, discont_factors, y_scale, restricted, unrestricted_weights = \
+            args = ['alpha', 'beta', 'gamma', 'discount_factors', 'y_scale', 'unrestricted_weights']
+            alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights = \
                 distribute_copula_spec(copula_spec, *args)
 
-            copula = NonstationaryUtilCls(alpha, beta, gamma, discont_factors, y_scale,
-                                          restricted, unrestricted_weights)
-            self.attr['copula'] = copula
+            copula = NonstationaryUtilCls(alpha, beta, gamma, discount_factors, y_scale,
+                                          unrestricted_weights)
         else:
             raise NotImplementedError
+
+        self.attr['copula'] = copula
+        self.logging
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
@@ -106,18 +109,6 @@ class UtilityCopulaCls(MetaCls):
 
         for u in [u_1, u_2]:
             np.testing.assert_equal(0 <= u <= 1, True)
-
-    def _logging(self):
-        """Provide some basic logging."""
-        # Distribute class attributes
-        u = self.attr['u_1'], self.attr['u_2']
-
-        fmt_ = ' {:<10}    ' + '{:25.15f}' * 2 + '\n'
-        with open('fit.copulpy.info', 'a') as outfile:
-            outfile.write(' Boundary Values\n\n')
-            outfile.write(fmt_.format(*[' requested'] + list(u)))
-            line = [' fitted', self.evaluate(1, 0, True), self.evaluate(0, 1, True)]
-            outfile.write(fmt_.format(*line))
 
     @staticmethod
     def _additional_checks(label, *args):

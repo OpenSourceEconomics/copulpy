@@ -7,54 +7,71 @@ def generate_random_request(constr=None):
     constr = constr or dict()
     copula_spec = dict()
 
-    version = np.random.choice(['scaled_archimedean', 'nonstationary'])
-    if version in ['scaled_archimedean']:
-        generating_function = np.random.choice([1])
-        copula_spec['generating_function'] = generating_function
-        marginals = np.random.choice(['power', 'exponential'], 2)
-        copula_spec['marginals'] = marginals
-    copula_spec['version'] = version
-    copula_spec['bounds'] = np.random.uniform(0.1, 10, 2)
-    copula_spec['u'] = np.random.uniform(0.01, 0.99, 2)
-    copula_spec['delta'] = np.random.uniform(0.001, 5)
-    copula_spec['r'] = np.random.uniform(0.001, 5, 2)
-    copula_spec['a'] = np.random.uniform(0.01, 10)
-    copula_spec['b'] = np.random.normal()
-
-    # version: nonstationary
-    copula_spec['alpha'] = np.random.uniform(0.4, 1.0)
-    copula_spec['beta'] = np.random.uniform(0.4, 1.0)
-    copula_spec['gamma'] = np.random.uniform(0.4, 1.0)
-    copula_spec['y_scale'] = np.random.uniform(0.5, 10.0)
-    copula_spec['discont_factors'] = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
-    copula_spec['restricted'] = np.random.choice([True, False])
-    copula_spec['unrestricted_weights'] = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
-
-    # We want to be able to request some constraint special cases.
-    if 'r' in constr.keys():
-        copula_spec['r'] = constr['r']
-    if 'bounds' in constr.keys():
-        copula_spec['bounds'] = constr['bounds']
-    if 'a' in constr.keys():
-        copula_spec['a'] = constr['a']
-    if 'b' in constr.keys():
-        copula_spec['b'] = constr['b']
-    if 'u' in constr.keys():
-        copula_spec['u'] = constr['u']
-    if 'delta' in constr.keys():
-        copula_spec['delta'] = constr['delta']
+    # Handle copula version
     if 'version' in constr.keys():
-        copula_spec['version'] = constr['version']
+        version = constr['version']
+    else:
+        version = np.random.choice(['scaled_archimedean', 'nonstationary'])
+    copula_spec['version'] = version
 
-    # We can now distribute the final specification for construction of the derived attributes.
-    bounds = copula_spec['bounds']
+    # Handle copula spec
+    if version in ['scaled_archimedean']:
+        copula_spec['scaled_archimedean'] = dict()
+        copula_spec['scaled_archimedean']['version'] = 'scaled_archimedean'
+
+        generating_function = np.random.choice([1])
+        marginals = np.random.choice(['power', 'exponential'], 2)
+
+        copula_spec['scaled_archimedean']['generating_function'] = generating_function
+        copula_spec['scaled_archimedean']['marginals'] = marginals
+        copula_spec['scaled_archimedean']['bounds'] = np.random.uniform(0.1, 10, 2)
+        copula_spec['scaled_archimedean']['u'] = np.random.uniform(0.01, 0.99, 2)
+        copula_spec['scaled_archimedean']['delta'] = np.random.uniform(0.001, 5)
+        copula_spec['scaled_archimedean']['r'] = np.random.uniform(0.001, 5, 2)
+        copula_spec['scaled_archimedean']['a'] = np.random.uniform(0.01, 10)
+        copula_spec['scaled_archimedean']['b'] = np.random.normal()
+
+        # We want to be able to request some constraint special cases.
+        if 'r' in constr.keys():
+            copula_spec['r'] = constr['r']
+        if 'bounds' in constr.keys():
+            copula_spec['scaled_archimedean']['bounds'] = constr['bounds']
+        if 'a' in constr.keys():
+            copula_spec['scaled_archimedean']['a'] = constr['a']
+        if 'b' in constr.keys():
+            copula_spec['scaled_archimedean']['b'] = constr['b']
+        if 'u' in constr.keys():
+            copula_spec['scaled_archimedean']['u'] = constr['u']
+        if 'delta' in constr.keys():
+            copula_spec['scaled_archimedean']['delta'] = constr['delta']
+
+    if version in ['nonstationary']:
+        copula_spec['nonstationary'] = dict()
+        copula_spec['nonstationary']['version'] = 'nonstationary'
+        copula_spec['nonstationary']['alpha'] = np.random.uniform(0.4, 1.0)
+        copula_spec['nonstationary']['beta'] = np.random.uniform(0.4, 1.0)
+        copula_spec['nonstationary']['gamma'] = np.random.uniform(0.4, 1.0)
+        copula_spec['nonstationary']['y_scale'] = np.random.uniform(0.5, 10.0)
+        copula_spec['nonstationary']['discount_factors'] = \
+            {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+
+        random_weights = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+        copula_spec['nonstationary']['unrestricted_weights'] = \
+            np.random.choice([random_weights, None])
 
     # These are derived attributes and thus need to be created at the very end.
     is_normalized = np.random.choice([True, False])
     if is_normalized:
         x, y = np.random.uniform(0, 1, 2)
     else:
-        x = np.random.uniform(0, bounds[0])
-        y = np.random.uniform(0, bounds[1])
+        if version in ['scaled_archimedean']:
+            bounds = copula_spec['scaled_archimedean']['bounds']
+            x = np.random.uniform(0, bounds[0])
+            y = np.random.uniform(0, bounds[1])
+        elif version in ['nonstationary']:
+            x = np.random.uniform(0, 10)
+            y = np.random.uniform(0, 10)
+        else:
+            raise NotImplementedError
 
     return x, y, is_normalized, copula_spec

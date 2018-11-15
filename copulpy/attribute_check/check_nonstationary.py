@@ -6,7 +6,6 @@ def check_attributes_nonstationary(self):
     """Check attributes."""
     alpha, beta, gamma, y_scale, discount_factors = \
         self.get_attr('alpha', 'beta', 'gamma', 'y_scale', 'discount_factors')
-    print(alpha)
     np.testing.assert_equal(0 < alpha <= 1, True)
     np.testing.assert_equal(0 < beta <= 1, True)
     np.testing.assert_equal(0 < gamma <= 1, True)

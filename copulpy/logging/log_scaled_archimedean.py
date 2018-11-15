@@ -10,5 +10,6 @@ def log_scaled_archimedean(self):
     with open('fit.copulpy.info', 'a') as outfile:
         outfile.write(' Boundary Values\n\n')
         outfile.write(fmt_.format(*[' requested'] + list(u)))
-        line = [' fitted', self.evaluate(1, 0, True), self.evaluate(0, 1, True)]
+        line = [' fitted', self.evaluate(x=1, y=0, is_normalized=True, t=0),
+                self.evaluate(x=0, y=1, is_normalized=True, t=0)]
         outfile.write(fmt_.format(*line))

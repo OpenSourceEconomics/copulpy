@@ -11,6 +11,8 @@ from copulpy.clsNonstationaryUtil import NonstationaryUtilCls
 
 from copulpy.logging.log_scaled_archimedean import log_scaled_archimedean
 from copulpy.logging.log_nonstationary import log_nonstationary
+from copulpy.attribute_check.check_scaled_archimedean import check_attributes_scaled_archimedean
+from copulpy.attribute_check.check_nonstationary import check_attributes_nonstationary
 
 
 class UtilityCopulaCls(MetaCls):
@@ -22,11 +24,13 @@ class UtilityCopulaCls(MetaCls):
         self.attr = dict()
         self.attr['version'] = version
 
-        # Assign correct logging function.
+        # Assign correct logging and attribute checks function.
         if version in ['scaled_archimedean']:
             self.logging = log_scaled_archimedean
+            self._check_attributes = check_attributes_scaled_archimedean
         elif version in ['nonstationary']:
             self.logging = log_nonstationary
+            self._check_attributes = check_attributes_nonstationary
         else:
             raise NotImplementedError
 
@@ -51,12 +55,18 @@ class UtilityCopulaCls(MetaCls):
             self.attr['u_2'] = u[1]
 
             copula = ScaledArchimedeanCls(generating_function, u[0], u[1], delta)
-            self._check_attributes()
 
         elif version in ['nonstationary']:
             args = ['alpha', 'beta', 'gamma', 'discount_factors', 'y_scale', 'unrestricted_weights']
             alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights = \
                 distribute_copula_spec(copula_spec, *args)
+
+            self.attr['unrestricted_weights'] = unrestricted_weights
+            self.attr['discount_factors'] = discount_factors
+            self.attr['y_scale'] = y_scale
+            self.attr['alpha'] = alpha
+            self.attr['gamma'] = gamma
+            self.attr['beta'] = beta
 
             copula = NonstationaryUtilCls(alpha, beta, gamma, discount_factors, y_scale,
                                           unrestricted_weights)
@@ -64,7 +74,8 @@ class UtilityCopulaCls(MetaCls):
             raise NotImplementedError
 
         self.attr['copula'] = copula
-        self.logging
+        (self._check_attributes)(self)
+        (self.logging)(self)
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
@@ -73,7 +84,7 @@ class UtilityCopulaCls(MetaCls):
 
         if version in ['scaled_archimedean']:
             self._additional_checks('evaluate_in', x, y)
-            self._check_attributes()
+            (self._check_attributes)(self)
 
             # Distribute class attributes
             attr = ['x_uniattribute_utility', 'y_uniattribute_utility']
@@ -101,14 +112,6 @@ class UtilityCopulaCls(MetaCls):
             raise NotImplementedError
 
         return rslt
-
-    def _check_attributes(self):
-        """Check the attributes of the class."""
-        # Distribute class attributes
-        u_1, u_2 = self.get_attr('u_1', 'u_2')
-
-        for u in [u_1, u_2]:
-            np.testing.assert_equal(0 <= u <= 1, True)
 
     @staticmethod
     def _additional_checks(label, *args):

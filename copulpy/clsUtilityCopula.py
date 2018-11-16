@@ -79,11 +79,10 @@ class UtilityCopulaCls(MetaCls):
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
-        # TODO: Please add checks that t is in fact an integer and is_normalized is a boolean.
-        # Otherwise with optional arguments it is always very risky that we pass in the wrong one
-        # and to not notice. This was the case when I was getting the tests inside the package
-        # to run again.
         # Check integrity of class and request
+        np.testing.assert_equal(isinstance(t, int), True)
+        np.testing.assert_equal(isinstance(is_normalized, bool), True)
+
         version, copula = self.get_attr('version', 'copula')
 
         if version in ['scaled_archimedean']:
@@ -107,20 +106,18 @@ class UtilityCopulaCls(MetaCls):
             # Evaluate multiattribute utility copula
             rslt = copula.evaluate(v_1, v_2)
 
-            # Checks on return value
-            # TODO: Please move outside the if clause so we have tests for different types of
-            # utility functions.
-            self._additional_checks('evaluate_out', rslt)
-
         elif version in ['nonstationary']:
             rslt = copula.evaluate(x, y, t)
         else:
             raise NotImplementedError
 
+        # Checks on return value
+        self._additional_checks(version, 'evaluate_out', rslt)
+
         return rslt
 
     @staticmethod
-    def _additional_checks(label, *args):
+    def _additional_checks(version, label, *args):
         """Perform some additional checks on selected features of the class instance."""
         # We only run these tests during debugging as otherwise the performance deteriorates.
         if not IS_DEBUG:
@@ -129,9 +126,18 @@ class UtilityCopulaCls(MetaCls):
         if label in ['evaluate_in']:
             for var in args:
                 np.testing.assert_equal(np.all(var >= 0), True)
+
         elif label in ['evaluate_out']:
             rslt, = args
-            np.testing.assert_equal(np.all(0.0 <= rslt) <= 1.0, True)
-            np.testing.assert_equal(np.all(rslt <= 1.0), True)
+
+            if version in ['scaled_archimedean']:
+                np.testing.assert_equal(np.all(0.0 <= rslt) <= 1.0, True)
+                np.testing.assert_equal(np.all(rslt <= 1.0), True)
+
+            elif version in ['nonstationary']:
+                np.testing.assert_equal(np.all(rslt >= 0), True)
+
+            else:
+                raise NotImplementedError
         else:
             raise NotImplementedError

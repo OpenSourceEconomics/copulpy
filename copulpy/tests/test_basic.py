@@ -13,14 +13,11 @@ from copulpy.config_copulpy import PACKAGE_DIR
 
 
 def test_1():
-    """This test ensures that a multiattribute utility function is always created."""
+    """Ensure that a multiattribute utility function is always created."""
     for _ in range(10):
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
 
-        # TODO: Please consider to include the periods list as one of the return arguments of the
-        # generate_random_request() function. Then we could just drop this below. If you decide
-        # to do this, please also adjust the run_property.py module.
         periods = [0]
         if copula_spec['version'] == 'nonstationary':
             periods = copula_spec['nonstationary']['discount_factors'].keys()
@@ -31,7 +28,7 @@ def test_1():
 
 @pytest.mark.skipif(os.getenv('CI') in ['true'], reason='slight numerical differences')
 def test_2():
-    """This test runs a subset of our regression vault."""
+    """Run a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:50]:
         rslt, x, y, period, is_normalized, copula_spec = test
@@ -40,8 +37,10 @@ def test_2():
 
 
 def test_3():
-    """This test ensures that linear transformations of the uniattribute utility functions do not
-    matter for the evaluation of the multiattribute utility copula."""
+    """Ensure that linear transformations of the uniattribute utility functions...
+
+    do not matter for the evaluation of the multiattribute utility copula.
+    """
     constr = dict()
     constr['version'] = 'scaled_archimedean'
     period = np.random.randint(1, 100)
@@ -61,10 +60,7 @@ def test_3():
 
 
 def test_4():
-    """This test ensures that the basic conditions are satisfied by the multiattribute utility
-    copula."""
-    # TODO: Would it be useful to allow this kind of request for both copulas. This would require
-    # the addition of the normalization feature to both, I guess.
+    """Ensure that the basic conditions are satisfied by the multiattribute utility copula."""
     constr = dict()
     constr['version'] = 'scaled_archimedean'
     period = np.random.randint(1, 100)
@@ -79,19 +75,17 @@ def test_4():
 
         # Nondecreasing in both arguments.
         v = np.random.uniform(0, 1, 2)
-        base = copula.evaluate(*v, period, True)
+        base = copula.evaluate(*v, t=period, is_normalized=True)
 
         v_upper = []
         for item in v:
             v_upper += [np.random.uniform(item, 1)]
-        np.testing.assert_equal(copula.evaluate(*v_upper, period, True) >= base, True)
+        np.testing.assert_equal(
+            copula.evaluate(*v_upper, t=period, is_normalized=True) >= base, True)
 
 
 def test_5():
-    """This test runs flake8 to ensure the code quality. However, this is only relevant during
-    development."""
-    # TODO: I needed to rename the logging directory as to not have to deal with conflicting
-    # imports from logging package from the standard library.
+    """Run flake8 to ensure the code quality. However, this is only relevant during development."""
     try:
         import flake8    # noqa: F401
     except ImportError:

@@ -9,8 +9,8 @@ from copulpy.clsPower import PowerCls
 from copulpy.clsMeta import MetaCls
 from copulpy.clsNonstationaryUtil import NonstationaryUtilCls
 
-from copulpy.logging.log_scaled_archimedean import log_scaled_archimedean
-from copulpy.logging.log_nonstationary import log_nonstationary
+from copulpy.monitoring.monitoring_scaled_archimedean import log_scaled_archimedean
+from copulpy.monitoring.monitoring_nonstationary import log_nonstationary
 from copulpy.attribute_check.check_scaled_archimedean import check_attributes_scaled_archimedean
 from copulpy.attribute_check.check_nonstationary import check_attributes_nonstationary
 
@@ -24,7 +24,7 @@ class UtilityCopulaCls(MetaCls):
         self.attr = dict()
         self.attr['version'] = version
 
-        # Assign correct logging and attribute checks function.
+        # Assign correct monitoring and attribute checks function.
         if version in ['scaled_archimedean']:
             self.logging = log_scaled_archimedean
             self._check_attributes = check_attributes_scaled_archimedean
@@ -79,6 +79,10 @@ class UtilityCopulaCls(MetaCls):
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
+        # TODO: Please add checks that t is in fact an integer and is_normalized is a boolean.
+        # Otherwise with optional arguments it is always very risky that we pass in the wrong one
+        # and to not notice. This was the case when I was getting the tests inside the package
+        # to run again.
         # Check integrity of class and request
         version, copula = self.get_attr('version', 'copula')
 
@@ -104,6 +108,8 @@ class UtilityCopulaCls(MetaCls):
             rslt = copula.evaluate(v_1, v_2)
 
             # Checks on return value
+            # TODO: Please move outside the if clause so we have tests for different types of
+            # utility functions.
             self._additional_checks('evaluate_out', rslt)
 
         elif version in ['nonstationary']:

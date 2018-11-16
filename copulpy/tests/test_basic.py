@@ -4,7 +4,6 @@ import pickle as pkl
 import subprocess
 import os
 
-
 import numpy as np
 import pytest
 
@@ -18,7 +17,13 @@ def test_1():
     for _ in range(10):
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
-        copula.evaluate(x, y, is_normalized)
+
+        periods = [0]
+        if copula_spec['version'] == 'nonstationary':
+            periods = copula_spec['nonstationary']['discount_factors'].keys()
+
+        for period in periods:
+            copula.evaluate(x, y, period, is_normalized)
 
 
 @pytest.mark.skipif(os.getenv('CI') in ['true'], reason='slight numerical differences')
@@ -26,47 +31,57 @@ def test_2():
     """This test runs a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:50]:
-        rslt, x, y, is_normalized, copula_spec = test
+        rslt, x, y, period, is_normalized, copula_spec = test
         copula = UtilityCopulaCls(copula_spec)
-        np.testing.assert_almost_equal(copula.evaluate(x, y, is_normalized), rslt)
+        np.testing.assert_equal(copula.evaluate(x, y, period, is_normalized), rslt)
 
 
 def test_3():
     """This test ensures that linear transformations of the uniattribute utility functions do not
     matter for the evaluation of the multiattribute utility copula."""
+    constr = dict()
+    constr['version'] = 'scaled_archimedean'
+    period = np.random.randint(1, 100)
+
     for _ in range(10):
-        x, y, is_normalized, copula_spec = generate_random_request()
+        x, y, is_normalized, copula_spec = generate_random_request(constr)
 
         copula = UtilityCopulaCls(copula_spec)
-        base = copula.evaluate(x, y, is_normalized)
+        base = copula.evaluate(x, y, period, is_normalized)
 
         for _ in range(10):
             copula_spec['a'] = np.random.uniform(0.01, 10)
             copula_spec['b'] = np.random.normal()
 
             copula = UtilityCopulaCls(copula_spec)
-            np.testing.assert_almost_equal(base, copula.evaluate(x, y, is_normalized))
+            np.testing.assert_almost_equal(base, copula.evaluate(x, y, period, is_normalized))
 
 
 def test_4():
     """This test ensures that the basic conditions are satisfied by the multiattribute utility
     copula."""
+    # TODO: Would it be useful to allow this kind of request for both copulas. This would require
+    # the addition of the normalization feature to both, I guess.
+    constr = dict()
+    constr['version'] = 'scaled_archimedean'
+    period = np.random.randint(1, 100)
+
     for _ in range(10):
-        _, _, _, copula_spec = generate_random_request()
+        _, _, _, copula_spec = generate_random_request(constr)
         copula = UtilityCopulaCls(copula_spec)
 
         # Normalized range and domain
-        np.testing.assert_equal(copula.evaluate(0, 0, True), 0.0)
-        np.testing.assert_equal(copula.evaluate(1, 1, True), 1.0)
+        np.testing.assert_equal(copula.evaluate(0, 0, period, True), 0.0)
+        np.testing.assert_equal(copula.evaluate(1, 1, period, True), 1.0)
 
         # Nondecreasing in both arguments.
         v = np.random.uniform(0, 1, 2)
-        base = copula.evaluate(*v, True)
+        base = copula.evaluate(*v, period, True)
 
         v_upper = []
         for item in v:
             v_upper += [np.random.uniform(item, 1)]
-        np.testing.assert_equal(copula.evaluate(*v_upper, True) >= base, True)
+        np.testing.assert_equal(copula.evaluate(*v_upper, period, True) >= base, True)
 
 
 def test_5():
@@ -84,4 +99,4 @@ def test_5():
         os.chdir(cwd)
     except CalledProcessError:
         os.chdir(cwd)
-        raise CalledProcessError
+        raise AssertionError('... code does not conform to style guide')

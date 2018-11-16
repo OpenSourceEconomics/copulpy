@@ -2,7 +2,7 @@
 
 
 def log_scaled_archimedean(self):
-    """Provide some basic logging."""
+    """Provide some basic monitoring."""
     # Distribute class attributes
     u = self.attr['u_1'], self.attr['u_2']
 

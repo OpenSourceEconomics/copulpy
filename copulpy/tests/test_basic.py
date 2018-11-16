@@ -18,6 +18,9 @@ def test_1():
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
 
+        # TODO: Please consider to include the periods list as one of the return arguments of the
+        # generate_random_request() function. Then we could just drop this below. If you decide
+        # to do this, please also adjust the run_property.py module.
         periods = [0]
         if copula_spec['version'] == 'nonstationary':
             periods = copula_spec['nonstationary']['discount_factors'].keys()

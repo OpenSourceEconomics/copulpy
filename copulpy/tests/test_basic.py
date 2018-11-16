@@ -90,6 +90,8 @@ def test_4():
 def test_5():
     """This test runs flake8 to ensure the code quality. However, this is only relevant during
     development."""
+    # TODO: I needed to rename the logging directory as to not have to deal with conflicting
+    # imports from logging package from the standard library.
     try:
         import flake8    # noqa: F401
     except ImportError:

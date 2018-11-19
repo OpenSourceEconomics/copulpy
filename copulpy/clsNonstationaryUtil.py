@@ -97,9 +97,9 @@ class NonstationaryUtilCls(MetaCls):
         """Check attributes."""
         alpha, beta, gamma, y_scale, discount_factors, y_weights = \
             self.get_attr('alpha', 'beta', 'gamma', 'y_scale', 'discount_factors', 'y_weights')
-        np.testing.assert_equal(0 <= alpha <= 1, True)
-        np.testing.assert_equal(0 <= beta <= 1, True)
-        np.testing.assert_equal(0 <= gamma <= 1, True)
+        np.testing.assert_equal(0 <= alpha <= 5, True)
+        np.testing.assert_equal(0 <= beta <= 5, True)
+        np.testing.assert_equal(0 <= gamma <= 5, True)
         np.testing.assert_equal(0 <= y_scale, True)
 
         np.testing.assert_equal(discount_factors.keys(), discount_factors.keys())

@@ -97,15 +97,15 @@ class NonstationaryUtilCls(MetaCls):
         """Check attributes."""
         alpha, beta, gamma, y_scale, discount_factors, y_weights = \
             self.get_attr('alpha', 'beta', 'gamma', 'y_scale', 'discount_factors', 'y_weights')
-        np.testing.assert_equal(0.0 <= alpha <= 5.0, True)
-        np.testing.assert_equal(0.0 <= beta <= 5.0, True)
-        np.testing.assert_equal(0.0 <= gamma <= 5.0, True)
+        np.testing.assert_equal(0.0 <= alpha <= 5.001, True)
+        np.testing.assert_equal(0.0 <= beta <= 5.001, True)
+        np.testing.assert_equal(0.0 <= gamma <= 5.001, True)
         np.testing.assert_equal(0.0 <= y_scale, True)
 
         np.testing.assert_equal(discount_factors.keys(), discount_factors.keys())
         for t in discount_factors.keys():
-            np.testing.assert_equal(0.0 <= discount_factors[t] <= 1.0, True)
-            np.testing.assert_equal(0.0 <= y_weights[t], True)
+            np.testing.assert_equal(0.0 <= discount_factors[t] <= 1.01, True)
+            np.testing.assert_equal(0.0 <= y_weights[t] <= 100.01, True)
 
     def _set_nonstationary_weights(self, unrestricted_weights):
         """Get the weight on y-utility in the CES function."""

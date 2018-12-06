@@ -1,4 +1,6 @@
 """This module houses the class for the multiattribute utility copula."""
+from functools import partial
+
 import numpy as np
 
 from copulpy.clsScaledArchimedean import ScaledArchimedeanCls
@@ -26,11 +28,11 @@ class UtilityCopulaCls(MetaCls):
 
         # Assign correct monitoring and attribute checks function.
         if version in ['scaled_archimedean']:
-            self.logging = log_scaled_archimedean
-            self._check_attributes = check_attributes_scaled_archimedean
+            self._logging = partial(log_scaled_archimedean, self)
+            self._check_attributes = partial(check_attributes_scaled_archimedean, self)
         elif version in ['nonstationary']:
-            self.logging = log_nonstationary
-            self._check_attributes = check_attributes_nonstationary
+            self._logging = partial(log_nonstationary, self)
+            self._check_attributes = partial(check_attributes_nonstationary, self)
         else:
             raise NotImplementedError
 
@@ -74,20 +76,20 @@ class UtilityCopulaCls(MetaCls):
             raise NotImplementedError
 
         self.attr['copula'] = copula
-        (self._check_attributes)(self)
-        (self.logging)(self)
+        self._check_attributes()
+        self._logging()
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
         # Check integrity of class and request
         np.testing.assert_equal(isinstance(t, int), True)
-        np.testing.assert_equal(isinstance(is_normalized, bool), True)
+        np.testing.assert_equal(isinstance(is_normalized, (bool, np.bool_)), True)
 
         version, copula = self.get_attr('version', 'copula')
 
         if version in ['scaled_archimedean']:
-            self._additional_checks('evaluate_in', x, y)
-            (self._check_attributes)(self)
+            self._additional_checks(version, 'evaluate_in', x, y)
+            self._check_attributes()
 
             # Distribute class attributes
             attr = ['x_uniattribute_utility', 'y_uniattribute_utility']

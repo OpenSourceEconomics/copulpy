@@ -2,6 +2,8 @@
 from subprocess import CalledProcessError
 import pickle as pkl
 import subprocess
+import importlib
+import socket
 import os
 
 import numpy as np
@@ -26,7 +28,7 @@ def test_1():
             copula.evaluate(x, y, period, is_normalized)
 
 
-@pytest.mark.skipif(os.getenv('CI') in ['true'], reason='slight numerical differences')
+@pytest.mark.skipif('acropolis' not in socket.gethostname(), reason='slight numerical differences')
 def test_2():
     """Run a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
@@ -84,12 +86,10 @@ def test_4():
             copula.evaluate(*v_upper, t=period, is_normalized=True) >= base, True)
 
 
+@pytest.mark.skipif(importlib.util.find_spec("flake8") is None, reason='flake8 unavailable')
 def test_5():
     """Run flake8 to ensure the code quality. However, this is only relevant during development."""
-    try:
-        import flake8    # noqa: F401
-    except ImportError:
-        return None
+    import flake8    # noqa: F401
 
     cwd = os.getcwd()
     os.chdir(PACKAGE_DIR)

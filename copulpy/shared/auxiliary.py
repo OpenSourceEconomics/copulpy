@@ -18,17 +18,17 @@ def distribute_copula_spec(copula_spec, *keys):
 
 def build_copula_spec(version, **kwargs):
     """Build a copula spec from labeled arguments."""
-    spec = dict()
-    spec['version'] = version
-    spec[version] = dict()
-    spec[version]['version'] = version
+    spec = {'version': version, version: {'version': version}}
 
     if kwargs is not None:
         for key, value in kwargs.items():
             spec[version][key] = value
 
     # Handle all optional arguments here
-    if (version == 'nonstationary') and ('unrestricted_weights' not in kwargs):
-        spec['nonstationary']['unrestricted_weights'] = None
+    if version in ['nonstationary']:
+        if 'unrestricted_weights' not in kwargs:
+            spec['nonstationary']['unrestricted_weights'] = None
+        if 'discounting' not in kwargs:
+            spec['nonstationary']['discounting'] = None
 
     return spec

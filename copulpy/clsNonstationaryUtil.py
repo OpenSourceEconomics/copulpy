@@ -1,13 +1,17 @@
 """Provide the class that implements the nonstationary utility function."""
+from functools import partial
+
 import numpy as np
 
+from copulpy.attribute_check.check_nonstationary import check_attributes_nonstationary
 from copulpy.clsMeta import MetaCls
 
 
 class NonstationaryUtilCls(MetaCls):
     """Manage the nonstationary utility function."""
 
-    def __init__(self, alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights=None):
+    def __init__(self, alpha, beta, gamma, discount_factors, y_scale,
+                 unrestricted_weights=None, discounting=None):
         """Initialize nonstationary utility function."""
         self.attr = dict()
         self.attr['discount_factors'] = discount_factors
@@ -16,18 +20,42 @@ class NonstationaryUtilCls(MetaCls):
         self.attr['gamma'] = gamma
         self.attr['beta'] = beta
 
-        self._set_nonstationary_weights(unrestricted_weights)
+        # Optional argument: implement exponential discounting or hyperbolic discounting
+        if discounting is not None:
+            np.testing.assert_equal(discounting in ['exponential', 'hyperbolic'], True)
+            if discounting in ['hyperbolic']:
+                new_dfx = {t: discount_factors[0] * discount_factors[1] ** t
+                           for t in discount_factors.keys()}
+            elif discounting in ['exponential']:
+                new_dfx = {t: discount_factors[0] ** t
+                           for t in discount_factors.keys()}
+            self.attr['discount_factors'] = new_dfx
 
-        self._check_attributes()
+        # Optional argument: nonparametric weight on y_t in the CES function.
+        if unrestricted_weights is None:
+            # We apply the g() function here so that y_weights can be used identically below
+            y_weights = {t: y_scale * d_f ** (alpha * (gamma - 1))
+                         for t, d_f in discount_factors.items()}
+            self.attr['y_weights'] = y_weights
+        else:
+            # Nonparametric weight: no g() function applied in this case.
+            self.attr['y_weights'] = unrestricted_weights
+
+        self._check_attributes_nonstationary = partial(check_attributes_nonstationary, self)
+        self._check_attributes_nonstationary()
 
     def evaluate(self, x, y, t=0):
         """Evaluate the flow utility from consumption (x,y) in period t."""
         alpha, beta, gamma, y_weights, discount_factors = \
             self.get_attr('alpha', 'beta', 'gamma', 'y_weights', 'discount_factors')
+        # Marginals: power utility
         v_1 = x ** beta
         v_2 = y ** (beta * gamma)
 
-        rslt = ((v_1 ** alpha) + (y_weights[t] ** alpha) * (v_2 ** alpha)) ** (1 / alpha)
+        # CES: aggregate marginals
+        rslt = ((v_1 ** alpha) + y_weights[t] * (v_2 ** alpha)) ** (1 / alpha)
+
+        # utility from the perspective of t=0 is discount factor x flow utility.
         rslt = discount_factors[t] * rslt
 
         return rslt
@@ -63,7 +91,7 @@ class NonstationaryUtilCls(MetaCls):
                          (delta_t ** ((1 - gamma) / (beta * gamma))))
 
         # This transformation is done in Dennis code, which in turn shadows Thomas' Stata code.
-        ex_rate = (indiff_amount) / money
+        ex_rate = indiff_amount / money
         return ex_rate
 
     def multivariate_discount_factor_sc(self, money, t):
@@ -91,30 +119,3 @@ class NonstationaryUtilCls(MetaCls):
         # This is again mirroring Dennis' code.
         md_cs = (indiff_amount - (1 + 1.5 * t / 12)) / money
         return md_cs
-
-    # Private methods
-    def _check_attributes(self):
-        """Check attributes."""
-        alpha, beta, gamma, y_scale, discount_factors, y_weights = \
-            self.get_attr('alpha', 'beta', 'gamma', 'y_scale', 'discount_factors', 'y_weights')
-        np.testing.assert_equal(0.0 <= alpha <= 5.001, True)
-        np.testing.assert_equal(0.0 <= beta <= 5.001, True)
-        np.testing.assert_equal(0.0 <= gamma <= 5.001, True)
-        np.testing.assert_equal(0.0 <= y_scale, True)
-
-        np.testing.assert_equal(discount_factors.keys(), discount_factors.keys())
-        for t in discount_factors.keys():
-            np.testing.assert_equal(0.0 <= discount_factors[t] <= 1.01, True)
-            np.testing.assert_equal(0.0 <= y_weights[t] <= 100.01, True)
-
-    def _set_nonstationary_weights(self, unrestricted_weights):
-        """Get the weight on y-utility in the CES function."""
-        if unrestricted_weights is None:
-            alpha, gamma, y_scale, discount_factors = \
-                self.get_attr('alpha', 'gamma', 'y_scale', 'discount_factors')
-
-            y_weights = {t: y_scale * d_f ** (gamma - 1)
-                         for t, d_f in discount_factors.items()}
-            self.attr['y_weights'] = y_weights
-        else:
-            self.attr['y_weights'] = unrestricted_weights

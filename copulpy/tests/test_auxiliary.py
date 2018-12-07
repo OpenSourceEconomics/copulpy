@@ -56,8 +56,12 @@ def generate_random_request(constr=None):
             {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
         random_weights = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+
+        # Optional arguments
         copula_spec['nonstationary']['unrestricted_weights'] = \
-            np.random.choice([random_weights, None])
+            np.random.choice([random_weights, None], p=[0.9, 0.1])
+        copula_spec['nonstationary']['discounting'] = \
+            np.random.choice([None, 'hyperbolic', 'exponential'], p=[0.8, 0.1, 0.1])
 
     # These are derived attributes and thus need to be created at the very end.
     is_normalized = np.random.choice([True, False])

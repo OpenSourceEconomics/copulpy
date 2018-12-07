@@ -56,14 +56,14 @@ class NonstationaryUtilCls(MetaCls):
     def exchange_rate(self, money, t):
         """Intratemporal exchange rate."""
         beta, gamma, c_other, discount_factors = \
-            self.get_attr('beta', 'gamma', 'y_scale', 'discount_factor')
+            self.get_attr('beta', 'gamma', 'y_scale', 'discount_factors')
         delta_t = discount_factors[t]
 
-        indiff_amount = ((money ** (1 / gamma)) * c_other ** (-beta * gamma) *
+        indiff_amount = ((money ** (1 / gamma)) * c_other ** (-1 / (beta * gamma)) *
                          (delta_t ** ((1 - gamma) / (beta * gamma))))
 
         # This transformation is done in Dennis code, which in turn shadows Thomas' Stata code.
-        ex_rate = (indiff_amount - 5) / money
+        ex_rate = (indiff_amount) / money
         return ex_rate
 
     def multivariate_discount_factor_sc(self, money, t):

@@ -34,7 +34,7 @@ class NonstationaryUtilCls(MetaCls):
         # Optional argument: nonparametric weight on y_t in the CES function.
         if unrestricted_weights is None:
             # We apply the g() function here so that y_weights can be used identically below
-            y_weights = {t: y_scale * d_f ** (alpha * (gamma - 1))
+            y_weights = {t: y_scale * d_f ** (gamma - 1)
                          for t, d_f in discount_factors.items()}
             self.attr['y_weights'] = y_weights
         else:
@@ -53,7 +53,7 @@ class NonstationaryUtilCls(MetaCls):
         v_2 = y ** (beta * gamma)
 
         # CES: aggregate marginals
-        rslt = ((v_1 ** alpha) + y_weights[t] * (v_2 ** alpha)) ** (1 / alpha)
+        rslt = ((v_1 ** alpha) + ((y_weights[t] * v_2) ** alpha)) ** (1.0 / alpha)
 
         # utility from the perspective of t=0 is discount factor x flow utility.
         rslt = discount_factors[t] * rslt
@@ -77,7 +77,7 @@ class NonstationaryUtilCls(MetaCls):
         if ud_factor > 1.5:
             ud_factor = 1.525
 
-        ud_factor = (1 / (1 + ud_factor * (t / 12)))
+        ud_factor = (1.0 / (1 + ud_factor * (t / 12)))
 
         return ud_factor
 

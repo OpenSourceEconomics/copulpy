@@ -12,5 +12,5 @@ script:
 
 notifications:
     slack: oseconomics:ooQf94gPhu4aZZU1VNzDQxUH
-      on_success: never
-      on_failure: always
+    on_success: never
+    on_failure: always

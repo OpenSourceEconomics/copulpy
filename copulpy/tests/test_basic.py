@@ -3,7 +3,8 @@ from subprocess import CalledProcessError
 import pickle as pkl
 import subprocess
 import importlib
-import socket
+import socket    # noqa: F401
+import copy
 import os
 
 import numpy as np
@@ -20,12 +21,13 @@ def test_1():
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
 
+        # Get all possible periods t that we can evaluate the copula at.
         periods = [0]
         if copula_spec['version'] == 'nonstationary':
             periods = copula_spec['nonstationary']['discount_factors'].keys()
 
         for period in periods:
-            copula.evaluate(x, y, period, is_normalized)
+            copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized)
 
 
 @pytest.mark.skipif('acropolis' not in socket.gethostname(), reason='slight numerical differences')
@@ -34,8 +36,22 @@ def test_2():
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:50]:
         rslt, x, y, period, is_normalized, copula_spec = test
+
+        # Handle old regression vault. Sometimes 'discounting' was missing for 'nonstationary'.
+        # TODO: Delete this once we create a new regression vault.
+        if 'version' not in copula_spec.keys():
+            old_spec = copy.deepcopy(copula_spec)
+            copula_spec = {'version': 'nonstationary', 'nonstationary': old_spec}
+            copula_spec['nonstationary']['discounting'] = None
+
+        if 'nonstationary' in copula_spec.keys():
+            if 'discounting' not in copula_spec['nonstationary'].keys():
+                copula_spec['nonstationary']['discounting'] = None
+        # ... delete until here.
+
         copula = UtilityCopulaCls(copula_spec)
-        np.testing.assert_equal(copula.evaluate(x, y, period, is_normalized), rslt)
+        np.testing.assert_almost_equal(
+            copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)
 
 
 def test_3():
@@ -51,14 +67,15 @@ def test_3():
         x, y, is_normalized, copula_spec = generate_random_request(constr)
 
         copula = UtilityCopulaCls(copula_spec)
-        base = copula.evaluate(x, y, period, is_normalized)
+        base = copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized)
 
         for _ in range(10):
             copula_spec['a'] = np.random.uniform(0.01, 10)
             copula_spec['b'] = np.random.normal()
 
             copula = UtilityCopulaCls(copula_spec)
-            np.testing.assert_almost_equal(base, copula.evaluate(x, y, period, is_normalized))
+            np.testing.assert_almost_equal(
+                base, copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized))
 
 
 def test_4():
@@ -72,8 +89,8 @@ def test_4():
         copula = UtilityCopulaCls(copula_spec)
 
         # Normalized range and domain
-        np.testing.assert_equal(copula.evaluate(0, 0, period, True), 0.0)
-        np.testing.assert_equal(copula.evaluate(1, 1, period, True), 1.0)
+        np.testing.assert_equal(copula.evaluate(x=0, y=0, t=period, is_normalized=True), 0.0)
+        np.testing.assert_equal(copula.evaluate(x=1, y=1, t=period, is_normalized=True), 1.0)
 
         # Nondecreasing in both arguments.
         v = np.random.uniform(0, 1, 2)

@@ -16,13 +16,13 @@ if False:
         x, y, is_normalized, copula_spec = generate_random_request()
         version = copula_spec['version']
 
-        # Handle versions
         if version in ['scaled_archimedean']:
-            rslt = UtilityCopulaCls(copula_spec).evaluate(
-                x=x, y=y, t=0, is_normalized=is_normalized)
+            rslt = UtilityCopulaCls(
+                copula_spec).evaluate(x=x, y=y, t=0, is_normalized=is_normalized)
             tests += [[rslt, x, y, 0, is_normalized, copula_spec]]
 
         elif version in ['nonstationary']:
+            # Evaluate 'nonstationary' at all possible periods t
             for period in copula_spec['nonstationary']['discount_factors'].keys():
                 rslt = UtilityCopulaCls(copula_spec).evaluate(
                     x=x, y=y, t=period, is_normalized=is_normalized)
@@ -43,11 +43,17 @@ for test in tests:
 
     rslt, x, y, period, is_normalized, copula_spec = test
     version = copula_spec['version']
+
+    # TODO: delete this after generating the new regression vault.
+    if version in ['nonstationary']:
+        if 'discounting' not in copula_spec[version].keys():
+            copula_spec[version]['discounting'] = None
+    # ... delete until here.
+
     copula = UtilityCopulaCls(copula_spec)
 
-    np.testing.assert_equal(copula.evaluate(
-        x=x, y=y, t=period, is_normalized=is_normalized), rslt
-    )
+    np.testing.assert_almost_equal(
+        copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)
 
     print('VERSION: {}.'.format(version))
     print('Test {0} of {1} passed.'.format(counter, totaltests))

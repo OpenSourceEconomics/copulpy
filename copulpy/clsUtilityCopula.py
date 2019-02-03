@@ -83,14 +83,12 @@ class UtilityCopulaCls(MetaCls):
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
-        # Check integrity of class and request
-        self._check_attributes(t=t, is_normalized=is_normalized)
-
         version, copula = self.get_attr('version', 'copula')
 
-        if version in ['scaled_archimedean']:
-            self._additional_checks(version, 'evaluate_in', x, y)
+        # Check integrity of request
+        self._additional_checks(version, 'evaluate_in', x, y, t, is_normalized)
 
+        if version in ['scaled_archimedean']:
             # Distribute class attributes
             attr = ['x_uniattribute_utility', 'y_uniattribute_utility']
             x_uniattribute_utility, y_uniattribute_utility = self.get_attr(attr)
@@ -109,7 +107,7 @@ class UtilityCopulaCls(MetaCls):
             rslt = copula.evaluate(v_1, v_2)
 
         elif version in ['nonstationary']:
-            rslt = copula.evaluate(x, y, t)
+            rslt = copula.evaluate(x=x, y=y, t=t)
         else:
             raise NotImplementedError
 
@@ -126,8 +124,17 @@ class UtilityCopulaCls(MetaCls):
             return
 
         if label in ['evaluate_in']:
-            for var in args:
-                np.testing.assert_equal(np.all(var >= 0), True)
+            x, y, t, is_normalized = args
+
+            # General input checks
+            np.testing.assert_equal(x >= 0, True)
+            np.testing.assert_equal(y >= 0, True)
+
+            # Version-specific input checks
+            if version in ['scaled_archimedean']:
+                np.testing.assert_equal(isinstance(is_normalized, (bool, np.bool_)), True)
+            elif version in ['nonstationary']:
+                np.testing.assert_equal(isinstance(t, int), True)
 
         elif label in ['evaluate_out']:
             rslt, = args

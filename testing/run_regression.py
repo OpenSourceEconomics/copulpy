@@ -54,6 +54,3 @@ for test in tests:
 
     np.testing.assert_almost_equal(
         copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)
-
-    print('VERSION: {}.'.format(version))
-    print('Test {0} of {1} passed.'.format(counter, totaltests))

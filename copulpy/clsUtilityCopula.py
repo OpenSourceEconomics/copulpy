@@ -85,7 +85,8 @@ class UtilityCopulaCls(MetaCls):
         """Evaluate the multiattribute utility function."""
         version, copula = self.get_attr('version', 'copula')
 
-        # Check integrity of request
+        # Check integrity of class and request
+        self._check_attributes()
         self._additional_checks(version, 'evaluate_in', x, y, t, is_normalized)
 
         if version in ['scaled_archimedean']:

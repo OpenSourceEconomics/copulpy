@@ -34,7 +34,7 @@ def test_1():
 def test_2():
     """Run a subset of our regression vault."""
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
-    for test in tests[:50]:
+    for test in tests[:1000]:
         rslt, x, y, period, is_normalized, copula_spec = test
 
         # Handle old regression vault. Sometimes 'discounting' was missing for 'nonstationary'.

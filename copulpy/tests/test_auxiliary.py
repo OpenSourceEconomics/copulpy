@@ -48,14 +48,14 @@ def generate_random_request(constr=None):
     if version in ['nonstationary']:
         copula_spec['nonstationary'] = dict()
         copula_spec['nonstationary']['version'] = 'nonstationary'
-        copula_spec['nonstationary']['alpha'] = np.random.uniform(0.4, 1.0)
-        copula_spec['nonstationary']['beta'] = np.random.uniform(0.4, 1.0)
-        copula_spec['nonstationary']['gamma'] = np.random.uniform(0.4, 1.0)
-        copula_spec['nonstationary']['y_scale'] = np.random.uniform(0.5, 10.0)
+        copula_spec['nonstationary']['alpha'] = np.random.uniform(0.1, 5.0)
+        copula_spec['nonstationary']['beta'] = np.random.uniform(0.1, 5.0)
+        copula_spec['nonstationary']['gamma'] = np.random.uniform(0.1, 5.0)
+        copula_spec['nonstationary']['y_scale'] = np.random.uniform(0.1, 5.0)
         copula_spec['nonstationary']['discount_factors'] = \
-            {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+            {t: np.random.uniform(0.2, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
-        random_weights = {t: np.random.uniform(0.3, 1.0) for t in [0, 1, 3, 6, 12, 24]}
+        random_weights = {t: np.random.uniform(0.1, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
         # Optional arguments
         copula_spec['nonstationary']['unrestricted_weights'] = \

@@ -14,14 +14,13 @@ class NonstationaryUtilCls(MetaCls):
                  unrestricted_weights=None, discounting=None):
         """Initialize nonstationary utility function."""
         self.attr = dict()
-        self.attr['discount_factors'] = discount_factors
         self.attr['y_scale'] = y_scale
         self.attr['alpha'] = alpha
         self.attr['gamma'] = gamma
         self.attr['beta'] = beta
 
-        # Optional argument: implement exponential discounting or hyperbolic discounting
         if discounting is not None:
+            # Implement exponential discounting or hyperbolic discounting
             np.testing.assert_equal(discounting in ['exponential', 'hyperbolic'], True)
             if discounting in ['hyperbolic']:
                 new_dfx = {t: discount_factors[0] * discount_factors[1] ** t
@@ -30,12 +29,17 @@ class NonstationaryUtilCls(MetaCls):
                 new_dfx = {t: discount_factors[0] ** t
                            for t in discount_factors.keys()}
             self.attr['discount_factors'] = new_dfx
+        else:
+            # Implement nonparametric discounting.
+            self.attr['discount_factors'] = discount_factors
 
         # Optional argument: nonparametric weight on y_t in the CES function.
         if unrestricted_weights is None:
             # We apply the g() function here so that y_weights can be used identically below
-            y_weights = {t: y_scale * d_f ** (gamma - 1)
-                         for t, d_f in discount_factors.items()}
+            discount_function = self.attr['discount_factors']
+            y_weights = {
+                t: y_scale * d_f ** (gamma - 1) for t, d_f in discount_function.items()
+            }
             self.attr['y_weights'] = y_weights
         else:
             # Nonparametric weight: no g() function applied in this case.

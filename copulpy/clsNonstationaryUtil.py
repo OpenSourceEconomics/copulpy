@@ -23,16 +23,18 @@ class NonstationaryUtilCls(MetaCls):
         if discounting is not None:
             # Implement exponential discounting or hyperbolic discounting
             np.testing.assert_equal(discounting in ['exponential', 'hyperbolic'], True)
-            df_0 = discount_factors[0]
-            df_1 = discount_factors[1]
 
             if discounting in ['hyperbolic']:
-                new_dfx = {t: df_0 * df_1 ** t for t in discount_factors.keys()}
+                df_beta = discount_factors[0]
+                df_delta = discount_factors[1]
+
+                new_dfx = {
+                    t: (df_beta * df_delta ** t if t > 0 else 1.0) for t in discount_factors.keys()
+                }
             elif discounting in ['exponential']:
-                new_dfx = {t: df_0 ** t for t in discount_factors.keys()}
-
+                df_delta = discount_factors[0]
+                new_dfx = {t: df_delta ** t for t in discount_factors.keys()}
             self.attr['discount_factors'] = new_dfx
-
         else:
             # Implement nonparametric discounting.
             self.attr['discount_factors'] = discount_factors
@@ -41,7 +43,7 @@ class NonstationaryUtilCls(MetaCls):
         if unrestricted_weights is None:
             # We apply the g() function here so that y_weights can be used identically below
             df = self.attr['discount_factors']
-            y_weights = {t: y_scale * d_t ** (gamma - 1) for t, d_t in df.items()}
+            y_weights = {t: y_scale * d_t ** (gamma - 1.0) for t, d_t in df.items()}
             self.attr['y_weights'] = y_weights
         else:
             # Nonparametric weight: no g() function applied in this case.

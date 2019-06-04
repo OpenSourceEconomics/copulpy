@@ -83,7 +83,8 @@ class UtilityCopulaCls(MetaCls):
 
     def evaluate(self, x, y, t=0, is_normalized=False):
         """Evaluate the multiattribute utility function."""
-        version, copula = self.get_attr('version', 'copula')
+        attr = ['version', 'copula']
+        version, copula = self.get_attr(attr)
 
         # Check integrity of class and request
         self._check_attributes()

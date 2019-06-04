@@ -10,9 +10,10 @@ from copulpy.clsMeta import MetaCls
 
 
 class ScaledArchimedeanCls(MetaCls):
-    """ This class manages all things related to the scaled Archimedean copula."""
-    def __init__(self, generating_function, u_1, u_2, delta):
+    """This class manages all things related to the scaled Archimedean copula."""
 
+    def __init__(self, generating_function, u_1, u_2, delta):
+        """Init method."""
         self.attr = dict()
 
         self.attr['delta'] = delta
@@ -32,7 +33,7 @@ class ScaledArchimedeanCls(MetaCls):
         self._check_attributes()
 
     def evaluate(self, v_1, v_2):
-        """This is the scaled Archimedean copula."""
+        """Evaluate the copula."""
         # Check request
         self._additional_checks('evaluate_in', v_1, v_2)
 
@@ -61,12 +62,12 @@ class ScaledArchimedeanCls(MetaCls):
         return rslt
 
     def _check_attributes(self):
-        """This function checks the attributes of the class."""
+        """Check the attributes of the class."""
         delta = self.get_attr('delta')
         np.testing.assert_equal(delta > 0, True)
 
     def _fit(self):
-        """This function fits the remaining parameters of the copula."""
+        """Fit the remaining parameters of the copula."""
         # Distribute class attributes
         u_1, u_2 = self.attr['u_1'], self.attr['u_2']
 
@@ -79,7 +80,7 @@ class ScaledArchimedeanCls(MetaCls):
         return m_1, m_2
 
     def _get_scale(self, m_1, m_2):
-        """This function determines the scale of the copula."""
+        """Determine the scale of the copula."""
         # Check request
         self._additional_checks('_get_scale_in', m_1, m_2)
 
@@ -93,7 +94,7 @@ class ScaledArchimedeanCls(MetaCls):
         return rslt
 
     def criterion(self, u_1, u_2, x):
-        """This method serves as the criterion function for the copula construction."""
+        """Criterion function for the copula construction."""
         m_1, m_2 = x
 
         a = self._get_scale(m_1, m_2)
@@ -122,8 +123,7 @@ class ScaledArchimedeanCls(MetaCls):
 
     @staticmethod
     def _additional_checks(label, *args):
-        """This method performs some additional checks on selected features of the class
-        instance."""
+        """Perform some additional checks on selected features of the class instance."""
         # We only run these tests during debugging as otherwise the performance deteriorates.
         if not IS_DEBUG:
             return
@@ -160,7 +160,7 @@ class ScaledArchimedeanCls(MetaCls):
 
 # We collect the generating functions here.
 def generating_function_1(delta, t):
-    """This is the copula generating function that yields a multiplicative form."""
+    """Generating function that yields a multiplicative form."""
     # Check request
     np.testing.assert_equal(np.all(delta > 0), True)
     np.testing.assert_equal(np.all(t <= 1.0), True)
@@ -170,7 +170,7 @@ def generating_function_1(delta, t):
 
 
 def inverse_generating_function_1(delta, t):
-    """This is the inverse of the copula generating function."""
+    """Inverse of the copula generating function."""
     # Check request
     np.testing.assert_equal(np.all(delta > 0), True)
     np.testing.assert_equal(np.all(t <= 1.0), True)

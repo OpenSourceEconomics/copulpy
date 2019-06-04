@@ -29,11 +29,11 @@ class NonstationaryUtilCls(MetaCls):
                 df_delta = discount_factors[1]
 
                 new_dfx = {
-                    t: (df_beta * df_delta ** t if t > 0 else 1.0) for t in discount_factors.keys()
+                    t: (df_beta * df_delta ** t if t > 0.0 else 1) for t in discount_factors.keys()
                 }
             elif discounting in ['exponential']:
                 df_delta = discount_factors[0]
-                new_dfx = {t: df_delta ** t for t in discount_factors.keys()}
+                new_dfx = {t: (df_delta ** t if t > 0.0 else 1) for t in discount_factors.keys()}
             self.attr['discount_factors'] = new_dfx
         else:
             # Implement nonparametric discounting.

@@ -4,7 +4,6 @@ import pickle as pkl
 import subprocess
 import importlib
 import socket    # noqa: F401
-import copy
 import os
 
 import numpy as np

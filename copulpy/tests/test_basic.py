@@ -37,19 +37,6 @@ def test_2():
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:1000]:
         rslt, x, y, period, is_normalized, copula_spec = test
-
-        # Handle old regression vault. Sometimes 'discounting' was missing for 'nonstationary'.
-        # TODO: Delete this once we create a new regression vault.
-        if 'version' not in copula_spec.keys():
-            old_spec = copy.deepcopy(copula_spec)
-            copula_spec = {'version': 'nonstationary', 'nonstationary': old_spec}
-            copula_spec['nonstationary']['discounting'] = None
-
-        if 'nonstationary' in copula_spec.keys():
-            if 'discounting' not in copula_spec['nonstationary'].keys():
-                copula_spec['nonstationary']['discounting'] = None
-        # ... delete until here.
-
         copula = UtilityCopulaCls(copula_spec)
         np.testing.assert_almost_equal(
             copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)

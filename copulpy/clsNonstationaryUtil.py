@@ -70,7 +70,6 @@ class NonstationaryUtilCls(MetaCls):
 
         return rslt
 
-    # TODO: Check with Thomas how exchange rates and discount functions are calculated.
     # Additional statistics for temporal decisions. In the future, this might be moved to trempy.
     def univariate_discount_factor(self, money, t):
         """Univariate discount factor."""

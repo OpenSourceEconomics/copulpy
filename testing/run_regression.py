@@ -43,13 +43,6 @@ for test in tests:
 
     rslt, x, y, period, is_normalized, copula_spec = test
     version = copula_spec['version']
-
-    # TODO: delete this after generating the new regression vault.
-    if version in ['nonstationary']:
-        if 'discounting' not in copula_spec[version].keys():
-            copula_spec[version]['discounting'] = None
-    # ... delete until here.
-
     copula = UtilityCopulaCls(copula_spec)
 
     np.testing.assert_almost_equal(

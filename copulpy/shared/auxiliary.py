@@ -25,10 +25,10 @@ def build_copula_spec(version, **kwargs):
             spec[version][key] = value
 
     # Handle all optional arguments here
-    if version in ['nonstationary']:
+    if version in ['nonstationary', 'warmglow']:
         if 'unrestricted_weights' not in kwargs:
-            spec['nonstationary']['unrestricted_weights'] = None
+            spec[version]['unrestricted_weights'] = None
         if 'discounting' not in kwargs:
-            spec['nonstationary']['discounting'] = None
+            spec[version]['discounting'] = None
 
     return spec

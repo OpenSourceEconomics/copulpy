@@ -87,6 +87,8 @@ class UtilityCopulaCls(MetaCls):
                 copula = WarmglowUtilCls(
                     alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting
                     )
+            else:
+                raise NotImplementedError
         else:
             raise NotImplementedError
 
@@ -118,8 +120,7 @@ class UtilityCopulaCls(MetaCls):
             else:
                 v_1, v_2 = x, y
 
-            # Evaluate multiattribute utility copula
-            rslt = copula.evaluate(v_1, v_2)
+            rslt = copula.evaluate(v_1=v_1, v_2=v_2)
 
         elif version in ['nonstationary', 'warmglow']:
             rslt = copula.evaluate(x=x, y=y, t=t)
@@ -148,7 +149,7 @@ class UtilityCopulaCls(MetaCls):
             # Version-specific input checks
             if version in ['scaled_archimedean']:
                 np.testing.assert_equal(isinstance(is_normalized, (bool, np.bool_)), True)
-            elif version in ['nonstationary']:
+            elif version in ['nonstationary', 'warmglow']:
                 np.testing.assert_equal(isinstance(t, int), True)
 
         elif label in ['evaluate_out']:

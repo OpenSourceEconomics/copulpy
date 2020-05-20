@@ -60,71 +60,25 @@ class NonstationaryUtilCls(MetaCls):
         v_1 = x ** beta
         v_2 = y ** (beta * gamma)
 
-        # CES: aggregate marginals
-        try:
-            rslt = ((v_1 ** alpha) + ((y_weights[t] * v_2) ** alpha)) ** (1.0 / alpha)
-            rslt = discount_factors[t] * rslt
-        # Sometimes an overflow error occurs.
-        except ArithmeticError:
-            rslt = HUGE_FLOAT
+        # Case distinction to avoid overflow error
+        if x == 0.0:
+            if y == 0.0:
+                # Both zero
+                utils = 0.0
+            else:
+                # Only y positive
+                utils = discount_factors[t] * y_weights[t] * v_2
+        else:
+            if y == 0.0:
+                # Only x positive
+                utils = discount_factors[t] * v_1
+            else:
+                # Both positive.
+                try:
+                    utils = ((v_1 ** alpha) + ((y_weights[t] * v_2) ** alpha)) ** (1.0 / alpha)
+                    utils = discount_factors[t] * utils
+                # Sometimes an overflow error occurs.
+                except ArithmeticError:
+                    utils = HUGE_FLOAT
 
-        return rslt
-
-    # Additional statistics for temporal decisions. In the future, this might be moved to trempy.
-    def univariate_discount_factor(self, money, t):
-        """Univariate discount factor."""
-        beta, discount_factors = self.get_attr('beta', 'discount_factors')
-        delta_t = discount_factors[t]
-
-        indiff_amount = money * delta_t ** (-1 / beta)
-
-        # These adjustment mirror Dennis' code which in turn is shadowing Thomas' Stata code
-        ud_factor = (indiff_amount / money - 1) * 12 / max(t, 1)
-        if ud_factor != 0:
-            ud_factor = ud_factor - 0.025
-
-        if ud_factor > 1.5:
-            ud_factor = 1.525
-
-        ud_factor = (1.0 / (1 + ud_factor * (t / 12)))
-
-        return ud_factor
-
-    def exchange_rate(self, money, t):
-        """Intratemporal exchange rate."""
-        beta, gamma, c_other, discount_factors = \
-            self.get_attr('beta', 'gamma', 'y_scale', 'discount_factors')
-        delta_t = discount_factors[t]
-
-        indiff_amount = ((money ** (1 / gamma)) * c_other ** (-1 / (beta * gamma)) *
-                         (delta_t ** ((1 - gamma) / (beta * gamma))))
-
-        # This transformation is done in Dennis code, which in turn shadows Thomas' Stata code.
-        ex_rate = indiff_amount / money
-        return ex_rate
-
-    def multivariate_discount_factor_sc(self, money, t):
-        """Multivariate discounting from self today to charity tomorrow."""
-        beta, gamma, c_other, discount_factors = \
-            self.get_attr('beta', 'gamma', 'y_scale', 'discount_factors')
-        delta_t = discount_factors[t]
-
-        indiff_amount = ((c_other ** (-1 / (beta * gamma))) *
-                         (delta_t ** (-1 / beta)) * (money ** (1 / gamma)))
-
-        # This is again mirroring Dennis' code.
-        md_sc = (indiff_amount - 3 * (1 + 1.5 * t / 12)) / money
-
-        return md_sc
-
-    def multivariate_discount_factor_cs(self, money, t):
-        """Multivariate discounting from charity today to self tomorrow."""
-        beta, gamma, c_other, discount_factors = \
-            self.get_attr('beta', 'gamma', 'y_scale', 'discount_factors')
-        delta_t = discount_factors[t]
-
-        indiff_amount = ((c_other ** (1 / beta)) * (delta_t ** (-1 / beta))) * (money ** gamma)
-
-        # This is again mirroring Dennis' code.
-        md_cs = (indiff_amount - (1 + 1.5 * t / 12)) / money
-        return md_cs
+        return utils

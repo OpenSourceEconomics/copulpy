@@ -59,15 +59,21 @@ class WarmglowUtilCls(MetaCls):
         v_1 = x ** beta
         v_2 = y ** beta
 
-        # CES: aggregate marginals
-        try:
-            utils = ((v_1 ** gamma) + ((y_weights[t] * v_2) ** gamma)) ** (1.0 / gamma)
-            utils = discount_factors[t] * utils
-            # Add warm glow utility
-            if y > 0:
+        # Case distinction to avoid overflow error
+        if (x == 0.0) & (y > 0.0):
+            utils = alpha + discount_factors[t] * y_weights[t] * v_2
+        elif (x > 0.0) & (y == 0.0):
+            utils = discount_factors[t] * v_1
+        elif (x == 0.0) & (y == 0.0):
+            utils = 0.0
+        else:
+            # Both x and y are positive:
+            try:
+                utils = ((v_1 ** gamma) + ((y_weights[t] * v_2) ** gamma)) ** (1.0 / gamma)
+                utils = discount_factors[t] * utils
+                # Add warm glow utility
                 utils = utils + alpha
-        # Sometimes an overflow error occurs.
-        except ArithmeticError:
-            utils = HUGE_FLOAT
-
+            # Sometimes an overflow error occurs.
+            except ArithmeticError:
+                utils = HUGE_FLOAT
         return utils

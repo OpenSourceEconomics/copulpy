@@ -20,11 +20,12 @@ def test_1():
     for _ in range(10):
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
+        version = copula_spec['version']
 
         # Get all possible periods t that we can evaluate the copula at.
         periods = [0]
-        if copula_spec['version'] == 'nonstationary':
-            periods = copula_spec['nonstationary']['discount_factors'].keys()
+        if version in ['nonstationary', 'warmglow']:
+            periods = copula_spec[version]['discount_factors'].keys()
 
         for period in periods:
             copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized)

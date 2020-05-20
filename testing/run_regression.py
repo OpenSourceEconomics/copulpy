@@ -21,9 +21,9 @@ if False:
                 copula_spec).evaluate(x=x, y=y, t=0, is_normalized=is_normalized)
             tests += [[rslt, x, y, 0, is_normalized, copula_spec]]
 
-        elif version in ['nonstationary']:
-            # Evaluate 'nonstationary' at all possible periods t
-            for period in copula_spec['nonstationary']['discount_factors'].keys():
+        elif version in ['nonstationary', 'warmglow']:
+            # Evaluate 'nonstationary' and 'warmglow' copula at all possible periods t
+            for period in copula_spec[version]['discount_factors'].keys():
                 rslt = UtilityCopulaCls(copula_spec).evaluate(
                     x=x, y=y, t=period, is_normalized=is_normalized)
                 tests += [[rslt, x, y, period, is_normalized, copula_spec]]

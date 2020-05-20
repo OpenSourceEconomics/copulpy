@@ -6,6 +6,7 @@ import numpy as np
 from copulpy.clsScaledArchimedean import ScaledArchimedeanCls
 from copulpy.clsNonstationaryUtil import NonstationaryUtilCls
 from copulpy.shared.auxiliary import distribute_copula_spec
+from copulpy.clsWarmglowUtil import WarmglowUtilCls
 from copulpy.clsExponential import ExponentialCls
 from copulpy.config_copulpy import IS_DEBUG
 from copulpy.clsPower import PowerCls
@@ -13,8 +14,11 @@ from copulpy.clsMeta import MetaCls
 
 from copulpy.attribute_check.check_scaled_archimedean import check_attributes_scaled_archimedean
 from copulpy.attribute_check.check_nonstationary import check_attributes_nonstationary
+from copulpy.attribute_check.check_warmglow import check_attributes_warmglow
+
 from copulpy.monitoring.monitoring_scaled_archimedean import log_scaled_archimedean
 from copulpy.monitoring.monitoring_nonstationary import log_nonstationary
+from copulpy.monitoring.monitoring_warmglow import log_warmglow
 
 
 class UtilityCopulaCls(MetaCls):
@@ -33,6 +37,9 @@ class UtilityCopulaCls(MetaCls):
         elif version in ['nonstationary']:
             self._logging = partial(log_nonstationary, self)
             self._check_attributes = partial(check_attributes_nonstationary, self)
+        elif version in ['warmglow']:
+            self._logging = partial(log_warmglow, self)
+            self._check_attributes = partial(check_attributes_warmglow, self)
         else:
             raise NotImplementedError
 
@@ -58,7 +65,7 @@ class UtilityCopulaCls(MetaCls):
 
             copula = ScaledArchimedeanCls(generating_function, u[0], u[1], delta)
 
-        elif version in ['nonstationary']:
+        elif version in ['nonstationary', 'warmglow']:
             args = ['alpha', 'beta', 'gamma', 'discount_factors', 'y_scale',
                     'unrestricted_weights', 'discounting']
             alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting = \
@@ -72,8 +79,14 @@ class UtilityCopulaCls(MetaCls):
             self.attr['gamma'] = gamma
             self.attr['beta'] = beta
 
-            copula = NonstationaryUtilCls(alpha, beta, gamma, discount_factors, y_scale,
-                                          unrestricted_weights, discounting)
+            if version in ['nonstationary']:
+                copula = NonstationaryUtilCls(
+                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting
+                    )
+            elif version in ['warmglow']:
+                copula = WarmglowUtilCls(
+                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting
+                    )
         else:
             raise NotImplementedError
 
@@ -108,7 +121,7 @@ class UtilityCopulaCls(MetaCls):
             # Evaluate multiattribute utility copula
             rslt = copula.evaluate(v_1, v_2)
 
-        elif version in ['nonstationary']:
+        elif version in ['nonstationary', 'warmglow']:
             rslt = copula.evaluate(x=x, y=y, t=t)
         else:
             raise NotImplementedError
@@ -145,9 +158,8 @@ class UtilityCopulaCls(MetaCls):
                 np.testing.assert_equal(np.all(0.0 <= rslt) <= 1.0, True)
                 np.testing.assert_equal(np.all(rslt <= 1.0), True)
 
-            elif version in ['nonstationary']:
+            elif version in ['nonstationary', 'warmglow']:
                 np.testing.assert_equal(np.all(rslt >= 0), True)
-
             else:
                 raise NotImplementedError
         else:

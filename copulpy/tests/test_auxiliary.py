@@ -11,7 +11,7 @@ def generate_random_request(constr=None):
     if 'version' in constr.keys():
         version = constr['version']
     else:
-        version = np.random.choice(['scaled_archimedean', 'nonstationary'])
+        version = np.random.choice(['scaled_archimedean', 'nonstationary', 'warmglow'])
     copula_spec['version'] = version
 
     # Handle copula spec
@@ -45,22 +45,22 @@ def generate_random_request(constr=None):
         if 'delta' in constr.keys():
             copula_spec['scaled_archimedean']['delta'] = constr['delta']
 
-    if version in ['nonstationary']:
-        copula_spec['nonstationary'] = dict()
-        copula_spec['nonstationary']['version'] = 'nonstationary'
-        copula_spec['nonstationary']['alpha'] = np.random.uniform(0.1, 5.0)
-        copula_spec['nonstationary']['beta'] = np.random.uniform(0.1, 5.0)
-        copula_spec['nonstationary']['gamma'] = np.random.uniform(0.1, 5.0)
-        copula_spec['nonstationary']['y_scale'] = np.random.uniform(0.1, 5.0)
-        copula_spec['nonstationary']['discount_factors'] = \
+    if version in ['nonstationary', 'warmglow']:
+        copula_spec[version] = dict()
+        copula_spec[version]['version'] = version
+        copula_spec[version]['alpha'] = np.random.uniform(0.1, 5.0)
+        copula_spec[version]['beta'] = np.random.uniform(0.1, 5.0)
+        copula_spec[version]['gamma'] = np.random.uniform(0.1, 5.0)
+        copula_spec[version]['y_scale'] = np.random.uniform(0.1, 5.0)
+        copula_spec[version]['discount_factors'] = \
             {t: np.random.uniform(0.2, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
         random_weights = {t: np.random.uniform(0.1, 1.0) for t in [0, 1, 3, 6, 12, 24]}
 
         # Optional arguments
-        copula_spec['nonstationary']['unrestricted_weights'] = \
+        copula_spec[version]['unrestricted_weights'] = \
             np.random.choice([random_weights, None], p=[0.9, 0.1])
-        copula_spec['nonstationary']['discounting'] = \
+        copula_spec[version]['discounting'] = \
             np.random.choice([None, 'hyperbolic', 'exponential'], p=[0.8, 0.1, 0.1])
 
     # These are derived attributes and thus need to be created at the very end.
@@ -72,7 +72,7 @@ def generate_random_request(constr=None):
             bounds = copula_spec['scaled_archimedean']['bounds']
             x = np.random.uniform(0, bounds[0])
             y = np.random.uniform(0, bounds[1])
-        elif version in ['nonstationary']:
+        elif version in ['nonstationary', 'warmglow']:
             x = np.random.uniform(0, 10)
             y = np.random.uniform(0, 10)
         else:

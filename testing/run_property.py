@@ -6,9 +6,10 @@ from copulpy.clsUtilityCopula import UtilityCopulaCls
 for _ in range(10000):
 
     x, y, is_normalized, copula_spec = generate_random_request()
+    version = copula_spec['version']
 
-    if copula_spec['version'] == 'nonstationary':
-        periods = copula_spec['nonstationary']['discount_factors'].keys()
+    if version in ['nonstationary', 'warmglow']:
+        periods = copula_spec[version]['discount_factors'].keys()
     else:
         periods = [0]
 

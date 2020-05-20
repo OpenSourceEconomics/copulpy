@@ -4,7 +4,6 @@ import pickle as pkl
 import subprocess
 import importlib
 import socket    # noqa: F401
-import copy
 import os
 
 import numpy as np
@@ -20,11 +19,12 @@ def test_1():
     for _ in range(10):
         x, y, is_normalized, copula_spec = generate_random_request()
         copula = UtilityCopulaCls(copula_spec)
+        version = copula_spec['version']
 
         # Get all possible periods t that we can evaluate the copula at.
         periods = [0]
-        if copula_spec['version'] == 'nonstationary':
-            periods = copula_spec['nonstationary']['discount_factors'].keys()
+        if version in ['nonstationary', 'warmglow']:
+            periods = copula_spec[version]['discount_factors'].keys()
 
         for period in periods:
             copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized)
@@ -36,19 +36,6 @@ def test_2():
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:1000]:
         rslt, x, y, period, is_normalized, copula_spec = test
-
-        # Handle old regression vault. Sometimes 'discounting' was missing for 'nonstationary'.
-        # TODO: Delete this once we create a new regression vault.
-        if 'version' not in copula_spec.keys():
-            old_spec = copy.deepcopy(copula_spec)
-            copula_spec = {'version': 'nonstationary', 'nonstationary': old_spec}
-            copula_spec['nonstationary']['discounting'] = None
-
-        if 'nonstationary' in copula_spec.keys():
-            if 'discounting' not in copula_spec['nonstationary'].keys():
-                copula_spec['nonstationary']['discounting'] = None
-        # ... delete until here.
-
         copula = UtilityCopulaCls(copula_spec)
         np.testing.assert_almost_equal(
             copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)

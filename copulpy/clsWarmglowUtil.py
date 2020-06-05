@@ -12,13 +12,16 @@ class WarmglowUtilCls(MetaCls):
     """Manage the warm glow utility function."""
 
     def __init__(self, alpha, beta, gamma, discount_factors, y_scale,
-                 unrestricted_weights=None, discounting=None):
+                 unrestricted_weights=None, discounting=None, warmglow_type="constant"):
         """Initialize warmglow utility function."""
         self.attr = dict()
         self.attr['y_scale'] = y_scale  # weight on utility from charity euro
         self.attr['alpha'] = alpha  # warm glow parameter
         self.attr['gamma'] = gamma  # correlation aversion
         self.attr['beta'] = beta  # risk aversion for self and charity euro
+        self.attr["warmglow_type"] = warmglow_type
+
+        np.testing.assert_equal(warmglow_type in ["constant", "linear"], True)
 
         if discounting is not None:
             # Implement exponential discounting or hyperbolic discounting
@@ -53,15 +56,24 @@ class WarmglowUtilCls(MetaCls):
 
     def evaluate(self, x, y, t=0):
         """Evaluate the flow utility from consumption (x,y) in period t."""
-        alpha, beta, gamma, y_weights, discount_factors = \
-            self.get_attr('alpha', 'beta', 'gamma', 'y_weights', 'discount_factors')
+        alpha, beta, gamma, y_weights, discount_factors, warmglow_type = \
+            self.get_attr(
+                'alpha', 'beta', 'gamma', 'y_weights', 'discount_factors', 'warmglow_type')
         # Marginals: power utility
         v_1 = x ** beta
         v_2 = y ** beta
 
+        # Warm glow utility
+        if warmglow_type in ["constant"]:
+            warmglow = alpha
+        elif warmglow_type in ["linear"]:
+            warmglow = alpha * y
+        else:
+            raise NotImplementedError
+
         # Case distinction to avoid overflow error
         if (x == 0.0) & (y > 0.0):
-            utils = alpha + discount_factors[t] * y_weights[t] * v_2
+            utils = warmglow + discount_factors[t] * y_weights[t] * v_2
         elif (x > 0.0) & (y == 0.0):
             utils = discount_factors[t] * v_1
         elif (x == 0.0) & (y == 0.0):
@@ -72,8 +84,9 @@ class WarmglowUtilCls(MetaCls):
                 utils = ((v_1 ** gamma) + ((y_weights[t] * v_2) ** gamma)) ** (1.0 / gamma)
                 utils = discount_factors[t] * utils
                 # Add warm glow utility
-                utils = utils + alpha
+                utils = utils + warmglow
             # Sometimes an overflow error occurs.
             except ArithmeticError:
                 utils = HUGE_FLOAT
+
         return utils

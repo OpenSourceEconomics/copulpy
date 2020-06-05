@@ -80,13 +80,18 @@ class UtilityCopulaCls(MetaCls):
             self.attr['beta'] = beta
 
             if version in ['nonstationary']:
+
                 copula = NonstationaryUtilCls(
-                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting
-                    )
+                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights,
+                    discounting)
             elif version in ['warmglow']:
+                # Handle version-specifc parameters
+                args = ['warmglow_type']
+                warmglow_model = distribute_copula_spec(copula_spec, *args)
+
                 copula = WarmglowUtilCls(
-                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights, discounting
-                    )
+                    alpha, beta, gamma, discount_factors, y_scale, unrestricted_weights,
+                    discounting, warmglow_model)
             else:
                 raise NotImplementedError
         else:

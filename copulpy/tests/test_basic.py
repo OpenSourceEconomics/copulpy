@@ -36,7 +36,15 @@ def test_2():
     tests = pkl.load(open(PACKAGE_DIR + '/tests/regression_vault.copulpy.pkl', 'rb'))
     for test in tests[:1000]:
         rslt, x, y, period, is_normalized, copula_spec = test
+
+        # Temporary: Handle missing arguments that were added later. Remove once vault is refreshed.
+        version = copula_spec['version']
+        if version in ["warmglow"]:
+            if "warmglow_type" not in copula_spec[version].keys():
+                copula_spec[version]["warmglow_type"] = "constant"
+
         copula = UtilityCopulaCls(copula_spec)
+        print(version)
         np.testing.assert_almost_equal(
             copula.evaluate(x=x, y=y, t=period, is_normalized=is_normalized), rslt)
 

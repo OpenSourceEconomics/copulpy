@@ -8,7 +8,7 @@ from copulpy.clsUtilityCopula import UtilityCopulaCls
 from copulpy.config_copulpy import PACKAGE_DIR
 
 # Generate a new regression vault
-if False:
+if True:
     NUM_TESTS = 1000
     tests = []
     for _ in range(NUM_TESTS):

@@ -12,7 +12,7 @@ def check_attributes_warmglow(self):
     alpha, beta, gamma, y_scale, discount_factors = \
         self.get_attr('alpha', 'beta', 'gamma', 'y_scale', 'discount_factors')
 
-    cond = (0.01 <= alpha) & (0.01 <= beta) & (0.01 <= gamma) & (0.01 <= y_scale)
+    cond = (0.0 <= alpha) & (0.01 <= beta) & (0.01 <= gamma) & (0.00 <= y_scale)
     np.testing.assert_equal(cond, True)
 
     cond = [(0.0 <= discount_factors[t] <= 1.01) for t in discount_factors.keys()]

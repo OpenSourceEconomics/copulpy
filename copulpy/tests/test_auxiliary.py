@@ -59,9 +59,14 @@ def generate_random_request(constr=None):
 
         # Optional arguments
         copula_spec[version]['unrestricted_weights'] = \
-            np.random.choice([random_weights, None], p=[0.9, 0.1])
+            np.random.choice([random_weights, None], p=[0.3, 0.7])
         copula_spec[version]['discounting'] = \
-            np.random.choice([None, 'hyperbolic', 'exponential'], p=[0.8, 0.1, 0.1])
+            np.random.choice([None, 'hyperbolic', 'exponential'], p=[0.6, 0.2, 0.2])
+
+        # Some version-specific arguments
+        if version in ["warmglow"]:
+            copula_spec[version]['warmglow_type'] = \
+                np.random.choice(["constant", "linear"], p=[0.5, 0.5])
 
     # These are derived attributes and thus need to be created at the very end.
     is_normalized = np.random.choice([True, False])
